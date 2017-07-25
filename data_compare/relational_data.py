@@ -1,3 +1,9 @@
+HEADER_INDEX = 0
+BEGIN_INDEX = 1
+STOP = "stop"
+ERROR = "error"
+
+
 class RelationalData (object):
     """This class represents a relational data set.
 
@@ -30,7 +36,7 @@ class RelationalData (object):
         self.pk = pk
         # Make sure the data is sorted asc by pk.
 
-        self.headers = data[0]
+        self.headers = data[HEADER_INDEX]
 
     def val(self, row, attr_name):
         """Return the value of the row associated with the given header name."""
@@ -41,7 +47,7 @@ class RelationalData (object):
         """Return the primary key value of the given row."""
         return self.val(self.headers, row, self.key)
 
-    def compare(self, rd):
+    def compare(self, comparator):
         """Compare this relational data set to the given relational data set.
 
         This comparison is currently limited by the following assumptions:
@@ -52,19 +58,25 @@ class RelationalData (object):
         2) A given row will only be compared to a row that has the same primary
            key value. A row that does not have a corresponding row in the 
            compared data set will be entered entirely into the errors."""
-        for row_a in self.data[1:]:
-            row_b = rd.matching_row(self.pk_val(row))
-            if row_b == STOP:
-                break
-            elif row_b == ERROR:
-                self.errors.append({"a": row_a})
-            else:
-                self.compare_row(row_a, row_b)
-                self.index_b += 1
+        # This is the beginning index of the comparator data, starting after the
+        # header index.
+        self.comparator_index = BEGIN_INDEX
+        self.comparator = comparator
 
-    def matching_row_b(self, pk_val):
+        for row in self.data[BEGIN_INDEX:]:
+            comparator_row = comparator.matching_row(self.pk_val(row))
+            
+            if comparator_row == STOP:
+                break
+            elif comparator_row == ERROR:
+                self.errors.append({"a": row})
+            else:
+                self.compare_row(row, comparator_row)
+                self.comparator_index += 1
+
+    def matching_row(self, pk_val):
         # We assume here that the primary key columns are integers.
-        row_b = self.b[self.index_b]
+        row_b = self.comparator[self.index_b]
         row_pkey_b = getval(self.headers_b, row_b, self.key_b)
 
         if self.index_b == self.length_b:
