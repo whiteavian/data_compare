@@ -47,7 +47,7 @@ class RelationalData (object):
 
     def pkey_val(self, row):
         """Return the primary key value of the given row."""
-        return self.val(self.headers, row, self.key)
+        return self.val(row, self.pkey)
 
     def compare(self, comparand):
         """Compare this relational data set to the given relational data set.
@@ -79,7 +79,7 @@ class RelationalData (object):
                 self.errors['missing_rows'] = row
             else:
                 self.compare_row(row, comparand_row)
-                self.comparand_index += 1
+                comparand_index += 1
 
     def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.
@@ -91,7 +91,7 @@ class RelationalData (object):
         return instructions to add the originating row to the errors."""
         # We assume here that the primary key columns are integers.
         row = self.data[i]
-        row_pkey = self.val(self.headers, row, self.pkey)
+        row_pkey = self.val(row, self.pkey)
 
         if i == self.length:
             return STOP, i

@@ -6,7 +6,6 @@ from data_compare.test.test_compare_schemas import (
 )
 
 
-
 sa = SQLDatabase(DBA_CONN)
 sb = SQLDatabase(DBB_CONN)
 
