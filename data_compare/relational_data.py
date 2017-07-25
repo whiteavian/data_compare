@@ -27,13 +27,13 @@ class RelationalData (object):
     RelationalData object).
     """
 
-    def __init__(self, data, pk):
+    def __init__(self, data, pkey):
         """Initialization expects data of lists of lists and the key, a string.
 
         The formats expected are described more in-depth in the class docstring."""
         self.data = data
         self.length = len(data)
-        self.pk = pk
+        self.pkey = pkey
         # Make sure the data is sorted asc by pk.
 
         self.headers = data[HEADER_INDEX]
@@ -43,7 +43,7 @@ class RelationalData (object):
         i = self.headers.index(attr_name)
         return row[i]
 
-    def pk_val(self, row):
+    def pkey_val(self, row):
         """Return the primary key value of the given row."""
         return self.val(self.headers, row, self.key)
 
@@ -60,24 +60,27 @@ class RelationalData (object):
            compared data set will be entered entirely into the errors."""
         # This is the beginning index of the comparator data, starting after the
         # header index.
-        self.comparator_index = BEGIN_INDEX
+        self.comparator.begin_index = BEGIN_INDEX
         self.comparator = comparator
 
         for row in self.data[BEGIN_INDEX:]:
-            comparator_row = comparator.matching_row(self.pk_val(row))
-            
+            comparator_row = comparator.matching_row(self.pkey_val(row))
+
             if comparator_row == STOP:
                 break
             elif comparator_row == ERROR:
-                self.errors.append({"a": row})
+                self.errors['missing_rows'] = row
             else:
                 self.compare_row(row, comparator_row)
                 self.comparator_index += 1
 
-    def matching_row(self, pk_val):
+    def matching_row(self, pkey_val):
+        """Return the row that has the given primary key value.
+
+        If we reach the end the """
         # We assume here that the primary key columns are integers.
-        row_b = self.comparator[self.index_b]
-        row_pkey_b = getval(self.headers_b, row_b, self.key_b)
+        row = self.data[self.begin_index]
+        row_pkey = self.val(self.headers, row, self.pkey)
 
         if self.index_b == self.length_b:
             return STOP
@@ -90,12 +93,6 @@ class RelationalData (object):
             return ERROR
         else:
             return row_b
-
-    def get_pk_val(self, row, a_or_b):
-        if a_or_b == 'a':
-            return getval(self.headers_a, row, self.key_a)
-        elif a_or_b == 'b':
-            return getval(self.headers_b, row, self.key_b)
 
     def compare_row(self, row_a, row_b):
         for header in self.shared_headers:
