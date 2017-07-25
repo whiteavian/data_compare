@@ -62,6 +62,8 @@ class RelationalData (object):
         # header index.
         self.comparator.begin_index = BEGIN_INDEX
         self.comparator = comparator
+        self.shared_headers = set(self.headers) & set(comparator.headers)
+        self.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
             comparator_row = comparator.matching_row(self.pkey_val(row))
@@ -96,13 +98,13 @@ class RelationalData (object):
         else:
             return row
 
-    def compare_row(self, row_a, row_b):
+    def compare_row(self, row, comparator_row):
         for header in self.shared_headers:
-            val_a = getval(self.headers_a, row_a, header)
-            val_b = getval(self.headers_b, row_b, header)
+            val = self.val(row, header)
+            comparator_val = comparator.val(row, header)
 
-            if val_a != val_b:
+            if val != comparator_val:
                 self.errors.append({
-                    '{}_{}_a'.format(header, self.get_pk_val(row_a, 'a')): val_a,
-                    '{}_{}_b'.format(header, self.get_pk_val(row_b, 'b')): val_b,
+                    '{}_{}_original'.format(header, self.pkey_val(row)): val,
+                    '{}_{}_comparator'.format(header, self.pkey_val(comparator_row)): comparator_val,
                     })
