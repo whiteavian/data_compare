@@ -5,7 +5,7 @@ ERROR = "error"
 
 
 class RelationalData (object):
-    """This class represents a relational data set.
+    """This class represents a relational data set and offers comparison to another.
 
     This class expects to be handed a list-like object of same-length list-
     like objects. The first entry represents names that correspond to the items
@@ -95,6 +95,8 @@ class RelationalData (object):
             return STOP, i
 
         if row_pkey < pkey_to_match:
+            # As this method is typically called from the comparand, how can we set
+            # errors on the original item, and not the comparand?
             self.errors['missing_rows'] = row
             i += 1
             return self.matching_row(pkey_to_match, i)
@@ -109,7 +111,7 @@ class RelationalData (object):
         Add both values to our errors if there is a mismatch."""
         for header in self.shared_headers:
             val = self.val(row, header)
-            comparand_val = comparand.val(row, header)
+            comparand_val = self.comparand.val(row, header)
 
             if val != comparand_val:
                 self.errors.append({
