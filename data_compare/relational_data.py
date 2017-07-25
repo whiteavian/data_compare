@@ -70,7 +70,7 @@ class RelationalData (object):
         for row in self.data[BEGIN_INDEX:]:
             # I don't love that we return a tuple here, but I prefer it to setting
             # a variable on the comparand. Can we do better?
-            comparand_row, comparand_index = 
+            comparand_row, comparand_index = \
                 comparand.matching_row(self.pkey_val(row), comparand_index)
 
             if comparand_row == STOP:
