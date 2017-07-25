@@ -1,9 +1,10 @@
-from data_compare.sql_database import (
+from data_compare.relational_data import RelationalData
+from data_compare.sql_database import SQLDatabase
+from data_compare.test.test_compare_schemas import (
 	DBA_CONN,
 	DBB_CONN,
-	SQLDatabase,
 )
-from data_compare.relational_data import RelationalData
+
 
 
 sa = SQLDatabase(DBA_CONN)
