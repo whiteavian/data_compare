@@ -32,6 +32,8 @@ class RelationalData (object):
 
         The formats expected are described more in-depth in the class docstring."""
         self.data = data
+        # Compute length once so it does not have to be recomputed every time 
+        # matching_row is called.
         self.length = len(data)
         self.pkey = pkey
         # Make sure the data is sorted asc by pk.
