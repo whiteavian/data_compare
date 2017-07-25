@@ -1,9 +1,9 @@
-from sql_database import (
+from data_compare.sql_database import (
 	DBA_CONN,
 	DBB_CONN,
-	TableComparison,
 	SQLDatabase,
 )
+from data_compare.relational_data import RelationalData
 
 
 sa = SQLDatabase(DBA_CONN)
@@ -30,6 +30,7 @@ pk_b = sb.table_pk_col_names(table_b)[0]
 a.insert(0, headers_a)
 b.insert(0, headers_b)
 
-tc = TableComparison(a, pk_a, b, pk_b)
-tc.compare_all()
-tc.errors
+a_rd = RelationalData(a, pk_a)
+b_rd = RelationalData(b, pk_b)
+a_rd.compare(b_rd)
+a_rd.errors
