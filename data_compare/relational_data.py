@@ -47,7 +47,7 @@ class RelationalData (object):
         """Return the primary key value of the given row."""
         return self.val(self.headers, row, self.key)
 
-    def compare(self, comparator):
+    def compare(self, comparand):
         """Compare this relational data set to the given relational data set.
 
         This comparison is currently limited by the following assumptions:
@@ -58,26 +58,26 @@ class RelationalData (object):
         2) A given row will only be compared to a row that has the same primary
            key value. A row that does not have a corresponding row in the 
            compared data set will be entered entirely into the errors."""
-        # This is the beginning index of the comparator data, starting after the
+        # This is the beginning index of the comparand data, starting after the
         # header index.
-        comparator_index = BEGIN_INDEX
-        self.comparator = comparator
-        self.shared_headers = set(self.headers) & set(comparator.headers)
+        comparand_index = BEGIN_INDEX
+        self.comparand = comparand
+        self.shared_headers = set(self.headers) & set(comparand.headers)
         self.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
             # I don't love that we return a tuple here, but I prefer it to setting
-            # a variable on the comparator. Can we do better?
-            comparator_row, comparator_index = 
-                comparator.matching_row(self.pkey_val(row), comparator_index)
+            # a variable on the comparand. Can we do better?
+            comparand_row, comparand_index = 
+                comparand.matching_row(self.pkey_val(row), comparand_index)
 
-            if comparator_row == STOP:
+            if comparand_row == STOP:
                 break
-            elif comparator_row == ERROR:
+            elif comparand_row == ERROR:
                 self.errors['missing_rows'] = row
             else:
-                self.compare_row(row, comparator_row)
-                self.comparator_index += 1
+                self.compare_row(row, comparand_row)
+                self.comparand_index += 1
 
     def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.
@@ -103,17 +103,17 @@ class RelationalData (object):
         else:
             return row, i
 
-    def compare_row(self, row, comparator_row):
+    def compare_row(self, row, comparand_row):
         """Compare the values of each row for each shared header.
 
         Add both values to our errors if there is a mismatch."""
         for header in self.shared_headers:
             val = self.val(row, header)
-            comparator_val = comparator.val(row, header)
+            comparand_val = comparand.val(row, header)
 
-            if val != comparator_val:
+            if val != comparand_val:
                 self.errors.append({
                     '{}_{}_original'.format(header, self.pkey_val(row)): val,
-                    '{}_{}_comparator'.format(header, 
-                        self.pkey_val(comparator_row)): comparator_val,
+                    '{}_{}_comparand'.format(header, 
+                        self.pkey_val(comparand_row)): comparand_val,
                     })
