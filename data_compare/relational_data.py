@@ -60,6 +60,8 @@ class RelationalData (object):
            compared data set will be entered entirely into the errors."""
         # This is the beginning index of the comparator data, starting after the
         # header index.
+        # TODO I don't like that we're setting a value on the comparator. Figure
+        # out a better way to keep track of the index.
         self.comparator.begin_index = BEGIN_INDEX
         self.comparator = comparator
         self.shared_headers = set(self.headers) & set(comparator.headers)
@@ -81,7 +83,9 @@ class RelationalData (object):
 
         This method relies on the sort by primary key we did at initialization.
         If we reach the end the data before finding a match, return instructions
-        to cease comparisons. Add each """
+        to cease comparisons. Add each row that has a key less than the given key
+        to our errors. If we reach a row that has a key greater than the given key,
+        return instructions to add the originating row to the errors."""
         # We assume here that the primary key columns are integers.
         row = self.data[self.begin_index]
         row_pkey = self.val(self.headers, row, self.pkey)
@@ -99,6 +103,9 @@ class RelationalData (object):
             return row
 
     def compare_row(self, row, comparator_row):
+        """Compare the values of each row for each shared header.
+
+        Add both values to our errors if there is a mismatch."""
         for header in self.shared_headers:
             val = self.val(row, header)
             comparator_val = comparator.val(row, header)
@@ -106,5 +113,6 @@ class RelationalData (object):
             if val != comparator_val:
                 self.errors.append({
                     '{}_{}_original'.format(header, self.pkey_val(row)): val,
-                    '{}_{}_comparator'.format(header, self.pkey_val(comparator_row)): comparator_val,
+                    '{}_{}_comparator'.format(header, 
+                        self.pkey_val(comparator_row)): comparator_val,
                     })
