@@ -60,15 +60,16 @@ class RelationalData (object):
            compared data set will be entered entirely into the errors."""
         # This is the beginning index of the comparator data, starting after the
         # header index.
-        # TODO I don't like that we're setting a value on the comparator. Figure
-        # out a better way to keep track of the index.
-        self.comparator.begin_index = BEGIN_INDEX
+        comparator_index = BEGIN_INDEX
         self.comparator = comparator
         self.shared_headers = set(self.headers) & set(comparator.headers)
         self.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
-            comparator_row = comparator.matching_row(self.pkey_val(row))
+            # I don't love that we return a tuple here, but I prefer it to setting
+            # a variable on the comparator. Can we do better?
+            comparator_row, comparator_index = 
+                comparator.matching_row(self.pkey_val(row), comparator_index)
 
             if comparator_row == STOP:
                 break
@@ -78,7 +79,7 @@ class RelationalData (object):
                 self.compare_row(row, comparator_row)
                 self.comparator_index += 1
 
-    def matching_row(self, pkey_to_match):
+    def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.
 
         This method relies on the sort by primary key we did at initialization.
@@ -87,20 +88,20 @@ class RelationalData (object):
         to our errors. If we reach a row that has a key greater than the given key,
         return instructions to add the originating row to the errors."""
         # We assume here that the primary key columns are integers.
-        row = self.data[self.begin_index]
+        row = self.data[i]
         row_pkey = self.val(self.headers, row, self.pkey)
 
-        if self.begin_index == self.length:
-            return STOP
+        if i == self.length:
+            return STOP, i
 
         if row_pkey < pkey_to_match:
             self.errors['missing_rows'] = row
-            self.begin_index += 1
-            return self.matching_row(pkey_to_match)
+            i += 1
+            return self.matching_row(pkey_to_match, i)
         elif row_pkey > pkey_to_match:
-            return ERROR
+            return ERROR, i
         else:
-            return row
+            return row, i
 
     def compare_row(self, row, comparator_row):
         """Compare the values of each row for each shared header.
