@@ -74,25 +74,27 @@ class RelationalData (object):
                 self.compare_row(row, comparator_row)
                 self.comparator_index += 1
 
-    def matching_row(self, pkey_val):
+    def matching_row(self, pkey_to_match):
         """Return the row that has the given primary key value.
 
-        If we reach the end the """
+        This method relies on the sort by primary key we did at initialization.
+        If we reach the end the data before finding a match, return instructions
+        to cease comparisons. Add each """
         # We assume here that the primary key columns are integers.
         row = self.data[self.begin_index]
         row_pkey = self.val(self.headers, row, self.pkey)
 
-        if self.index_b == self.length_b:
+        if self.begin_index == self.length:
             return STOP
 
-        if row_pkey_b < row_pkey_a:
-            self.errors.append({"b": row_b})
-            self.index_b += 1
-            return self.matching_row_b(row_pkey_a)
-        elif row_pkey_b > row_pkey_a:
+        if row_pkey < pkey_to_match:
+            self.errors['missing_rows'] = row
+            self.begin_index += 1
+            return self.matching_row(pkey_to_match)
+        elif row_pkey > pkey_to_match:
             return ERROR
         else:
-            return row_b
+            return row
 
     def compare_row(self, row_a, row_b):
         for header in self.shared_headers:
