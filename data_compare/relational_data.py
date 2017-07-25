@@ -65,7 +65,9 @@ class RelationalData (object):
         comparand_index = BEGIN_INDEX
         self.comparand = comparand
         self.shared_headers = set(self.headers) & set(comparand.headers)
+
         self.errors = []
+        comparand.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
             # I don't love that we return a tuple here, but I prefer it to setting
@@ -76,7 +78,7 @@ class RelationalData (object):
             if comparand_row == STOP:
                 break
             elif comparand_row == ERROR:
-                self.errors['missing_rows'] = row
+                self.errors.append({'missing_row': row})
             else:
                 self.compare_row(row, comparand_row)
                 comparand_index += 1
@@ -90,16 +92,16 @@ class RelationalData (object):
         to our errors. If we reach a row that has a key greater than the given key,
         return instructions to add the originating row to the errors."""
         # We assume here that the primary key columns are integers.
-        row = self.data[i]
-        row_pkey = self.val(row, self.pkey)
-
         if i == self.length:
             return STOP, i
+
+        row = self.data[i]
+        row_pkey = self.val(row, self.pkey)
 
         if row_pkey < pkey_to_match:
             # As this method is typically called from the comparand, how can we set
             # errors on the original item, and not the comparand?
-            self.errors['missing_rows'] = row
+            self.errors.append({'missing_row': row})
             i += 1
             return self.matching_row(pkey_to_match, i)
         elif row_pkey > pkey_to_match:
