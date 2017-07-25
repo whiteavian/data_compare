@@ -115,7 +115,7 @@ class RelationalData (object):
         Add both values to our errors if there is a mismatch."""
         for header in self.shared_headers:
             val = self.val(row, header)
-            comparand_val = self.comparand.val(row, header)
+            comparand_val = self.comparand.val(comparand_row, header)
 
             if val != comparand_val:
                 self.errors.append({
