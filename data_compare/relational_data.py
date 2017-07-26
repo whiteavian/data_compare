@@ -50,7 +50,7 @@ class RelationalData (object):
         return self.val(row, self.pkey)
 
     def compare(self, comparand):
-        """Compare this relational data set to the given relational data set.
+        """Compare this relational data set to the comparand relational data set.
 
         This comparison is currently limited by the following assumptions:
 

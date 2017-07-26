@@ -30,6 +30,9 @@ pk_b = sb.table_pk_col_names(table_b)[0]
 a.insert(0, headers_a)
 b.insert(0, headers_b)
 
+a
+b
+
 a_rd = RelationalData(a, pk_a)
 b_rd = RelationalData(b, pk_b)
 a_rd.compare(b_rd)
