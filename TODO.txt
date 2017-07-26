@@ -1,0 +1,18 @@
+This is a (very) rough to-do list for this project. It will (hopefully) become more readable, more complete, and better organized over time.
+
+TODO:
+- how should we store errors?
+- once we've done that, how should we present them?
+- sort data asc by pk
+
+- In what format should we collect the data discrepancies? These are currently stored in self.errors, but we should probably avoid using the term errors, which has specific connations in programming.
+- How should we record errors in the matching_row method, which is run on the comparand during compare.
+- Once we have collected our discrepancies, how should we present them?
+- Can we turn our discrepancies into formats that will allow for updating the comparand to match the original?
+
+Relational Data
+# Eventual TODO: account for different data types
+# Ex: utf8 vs latin1
+# Boolean 0 == False, etc
+# Eventual TODO: suggest rows are the same based on similarity of contents.
+# Is there any reason why we would actually want that?
