@@ -5,6 +5,7 @@ TODO:
 - how should we store errors?
 - once we've done that, how should we present them?
 - sort data asc by pk
+- consider merging SQLDatabase and RelationalData classes. They started out different, but as of a recent refactoring, they have quite similar structures.
 
 - In what format should we collect the data discrepancies? These are currently stored in self.errors, but we should probably avoid using the term errors, which has specific connations in programming.
 - How should we record errors in the matching_row method, which is run on the comparand during compare.
