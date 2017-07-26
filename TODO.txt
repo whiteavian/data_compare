@@ -1,6 +1,7 @@
-This is a (very) rough to-do list for this project. It will (hopefully) become more readable, more complete, and better organized over time.
+This is a (very) rough to-do list for this project. It will (hopefully) become more readable, more complete, and better organized soon.
 
 TODO:
+- docstrings in sql_database
 - how should we store errors?
 - once we've done that, how should we present them?
 - sort data asc by pk
