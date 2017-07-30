@@ -83,6 +83,9 @@ class RelationalData (object):
                 self.compare_row(row, comparand_row)
                 comparand_index += 1
 
+        for row in comparand.data[comparand_index:]:
+            self.errors.append({'comparand_missing_row': row})
+
     def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.
 
