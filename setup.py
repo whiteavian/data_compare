@@ -9,5 +9,6 @@ setup(
     install_requires=[
         'sqlalchemy',
         'sqlalchemy-utils',
+        'psycopg2',
     ],
 )
