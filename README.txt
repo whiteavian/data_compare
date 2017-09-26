@@ -6,5 +6,6 @@ CNF: configuration change
 DOC: documentation
 ENH: addition of a feature
 REF: refactor
+TST: test related work
 SCP: script
 SQL: SQL or SQLAlchemy related work
