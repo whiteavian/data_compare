@@ -23,10 +23,11 @@ class TestSetup:
 
 
     def create_dbs(self):
-        create_database(self.PG_CONN_STR)
+        create_database(self.LITE_CONN_STR)
 
-ts = TestSetup()
-ts.create_dbs()
+def main():
+    ts = TestSetup()
+    ts.create_dbs()
 
 if __name__ == "__main__":
     main()
