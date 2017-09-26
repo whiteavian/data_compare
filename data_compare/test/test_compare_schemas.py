@@ -25,6 +25,6 @@ def test_compare_schemas():
     BaseA.metadata.create_all(engine_a)
     BaseB.metadata.create_all(engine_b)
 
-    # create sqlite, postgres, mysql, and mssql databases and exhaustively
+    # create sqlite, postgres, mysql, maria? and mssql databases and exhaustively
     # compare them. Start with sqlite for now, and later extend.
 
