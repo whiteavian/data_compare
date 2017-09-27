@@ -2,3 +2,5 @@
 *.ipynb
 *.swp
 *.egg-info
+*.iml
+.idea
