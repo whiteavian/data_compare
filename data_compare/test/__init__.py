@@ -22,12 +22,17 @@ class TestSetup:
         self.LITE_CONN_STR = "sqlite:///test{}.db".format(CONN_STR_SUFFIX)
 
 
-    def create_dbs(self):
+    def test_create_dbs(self):
         create_database(self.LITE_CONN_STR)
+        create_database(self.PG_CONN_STR)
+      
+        # Do this on exit. 
+        drop_database(self.LITE_CONN_STR)
+        drop_database(self.PG_CONN_STR)
 
 def main():
     ts = TestSetup()
-    ts.create_dbs()
+    ts.test_create_dbs()
 
 if __name__ == "__main__":
     main()
