@@ -26,10 +26,12 @@ class TestSetup:
     def test_create_dbs(self):
         create_database(self.LITE_CONN_STR)
         create_database(self.PG_CONN_STR)
+        create_database(self.MY_CONN_STR)
       
         # Do this on exit. 
         drop_database(self.LITE_CONN_STR)
         drop_database(self.PG_CONN_STR)
+        drop_database(self.MY_CONN_STR)
 
 def main():
     ts = TestSetup()
