@@ -5,6 +5,7 @@ from sqlalchemy_utils import create_database, drop_database
 class TestSetup:
     """Create ephemeral databases for testing purposes, and destroy them after the
     tests have finished."""
+    # TODO put these in a configuration file.
     DB_USER = 'db_user'
     DB_PASS = 'db_pass'
     HOST = 'localhost'
