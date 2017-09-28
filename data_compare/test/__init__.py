@@ -7,7 +7,7 @@ class TestSetup:
     tests have finished."""
     # TODO put these in a configuration file.
     DB_USER = 'db_user'
-    DB_PASS = 'db_pass'
+    DB_PASS = 'db_pass123'
     HOST = 'localhost'
 
     def __init__(self):
