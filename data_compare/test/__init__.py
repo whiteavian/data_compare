@@ -24,10 +24,17 @@ class TestSetup:
 
 
     def test_create_dbs(self):
-        map(create_database, (self.LITE_CONN_STR, self.PG_CONN_STR, self.MY_CONN_STR))
+        dbs = [
+            self.LITE_CONN_STR,
+            self.PG_CONN_STR,
+            self.MY_CONN_STR,
+            self.MS_CONN_STR,
+        ]
+
+        map(create_database, dbs)
 
         # Do this on exit. 
-        map(drop_database, (self.LITE_CONN_STR, self.PG_CONN_STR, self.MY_CONN_STR))
+        map(drop_database, dbs)
 
 def main():
     ts = TestSetup()
