@@ -19,7 +19,7 @@ class TestSetup:
                             self.DB_USER, self.DB_PASS, self.HOST, CONN_STR_SUFFIX)
         # Because of the way pyodbc requires odbc.ini, maybe this setup will not work. 
         # Maybe we should use pymssql driver instead? TODO
-        self.MS_CONN_STR = "mssql+pyodbc://{}:{}@".format(self.DB_USER, self.DB_PASS)
+        # self.MS_CONN_STR = "mssql+pyodbc://{}:{}@?driver=SQL+Server+Native+Client+11.0".format(self.DB_USER, self.DB_PASS)
         self.LITE_CONN_STR = "sqlite:///test{}.db".format(CONN_STR_SUFFIX)
 
 
@@ -28,12 +28,12 @@ class TestSetup:
             self.LITE_CONN_STR,
             self.PG_CONN_STR,
             self.MY_CONN_STR,
-            self.MS_CONN_STR,
+            # self.MS_CONN_STR,
         ]
 
         map(create_database, dbs)
 
-        # Do this on exit. 
+        # Do this on exit.
         map(drop_database, dbs)
 
 def main():
