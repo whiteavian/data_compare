@@ -1,0 +1,17 @@
+Schema differences
+general
+column specific
+
+{
+"table1": {"general": (...), "col1": (...), "col2": (...)}, 
+"table2": {"general": (...), "col_2_1": (...)},
+}
+
+Data differences
+nested dict:
+	keys are pkeys, then next level are column names (actual values can be looked up from original data, no need to duplicate it here)
+	This does not currently differentiate between a completely missing row and a row in which the pkey exists in the other table, but all the values are different. Maybe one level up for "missing" versus "changes"
+
+	{"missing": (1, 2, 3), "changes": {4: ("foo", "loo"), 5: ("foo", "noo")}}
+
+Is looking up the values of the differences going to be quite slow? Would it be better to store them?
