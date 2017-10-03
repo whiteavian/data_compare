@@ -46,8 +46,25 @@ class SQLDatabase (object):
         self.engine = create_engine(conn_string)
         self.conn = self.engine.connect()
 
-        # revamp errors, esp with nesting. Tree structure?
-        self.errors = []
+        # The differences are a nesting of dicts and lists. The first level has table names, then a
+        # general entry and column specific entries. If the table data or column list is empty,
+        # that means the corresponding database does not have that table or column at all. To illustrate:
+        # {
+        #     table1:
+        #         {
+        #             general: [difference1, difference2],
+        #             col1: [difference3, difference4],
+        #             col2: [difference5]},
+        #     table2:
+        #         {
+        #             general: [],
+        #             col3: [difference6],
+        #             col4: [difference7, difference8],
+        #             col5: None,
+        #         },
+        #     table3: None,
+        # }
+        self.differences = {}
 # TODO
 # Use insepctor, instead: http://docs.sqlalchemy.org/en/latest/core/reflection.html
         self.metadata = MetaData(bind=self.engine, schema=schema)
@@ -93,10 +110,8 @@ class SQLDatabase (object):
     def compare_schemas(self, comparator):
         """Compare the schemas of the two given databases.
     
-        Compare the schema of database a (db_a) with the schema of 
-        database b (db_b)."""
-        # TODO this is not going to work because the table object of one database
-        # obviously isn't in the set of tables from another database.
+        Compare the schema of the database associated with self with the schema of
+        the comparator."""
         self.comparator = comparator
         common_table_names = set(self.table_names) & set(comparator.table_names)
         self.dual_set_compare(self.table_names, comparator.table_names)
@@ -104,7 +119,7 @@ class SQLDatabase (object):
         # add a and b not found tables to however we end up reporting errors
         # a_not_b_tables = set(db_a.tables) - common_table_names and vice versa
         map(self.compare_table_schemas, common_table_names)
-        print self.errors
+        print self.differences
 
     def dual_set_compare(self, a, b):
         self.single_set_compare(a, b, 'a')
@@ -112,7 +127,7 @@ class SQLDatabase (object):
 
     def single_set_compare(self, a, b, prefix):
         for i in set(a) - set(b):
-            self.errors.append({'table_{}'.format(prefix): i})
+            self.differences.append({'table_{}'.format(prefix): i})
     
     def compare_table_schemas(self, table_name):
         ta = self.table_from_name(table_name)
@@ -122,7 +137,7 @@ class SQLDatabase (object):
         self.dual_set_compare(ta.foreign_keys, tb.foreign_keys)
         self.dual_set_compare(ta.indexes, tb.indexes)
 
-        self.errors.extend(compare(table_keys, ta, tb))
+        self.differences.extend(compare(table_keys, ta, tb))
 
         self.compare_table_columns(ta, tb)
 
@@ -131,16 +146,16 @@ class SQLDatabase (object):
         tb_col_names = set(col.name for col in tb.columns)
 
         for col_name in ta_col_names - tb_col_names:
-            self.errors.append({'table_a_{}'.format(ta.name): col_name})
+            self.differences.append({'table_a_{}'.format(ta.name): col_name})
 
         for col_name in tb_col_names - ta_col_names:
-            self.errors.append({'table_b_{}'.format(tb.name): col_name})
+            self.differences.append({'table_b_{}'.format(tb.name): col_name})
 
         for col_name in ta_col_names & tb_col_names:
             col_a = self.column_from_table(ta, col_name)
             col_b = self.comparator.column_from_table(tb, col_name)
             
-            self.errors.extend(compare(column_keys, col_a, col_b))
+            self.differences.extend(compare(column_keys, col_a, col_b))
     
     def compare_data(self):
         """Compare the data of the two given databases.
