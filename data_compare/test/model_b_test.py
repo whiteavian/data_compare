@@ -8,8 +8,8 @@ from sqlalchemy.ext.declarative import declarative_base
 BaseB = declarative_base(MetaData())
 
 
-class UserB (BaseB):
-     __tablename__ = 'users'
+class PersonB (BaseB):
+     __tablename__ = 'person'
 
      id = Column(Integer, primary_key=True)
      nameb = Column(String)

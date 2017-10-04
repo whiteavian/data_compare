@@ -1,4 +1,6 @@
 from data_compare.sql_database import SQLDatabase
+from model_a_test import BaseA
+from model_b_test import BaseB
 from . import SQLDatabaseTestCase
 
 
@@ -8,10 +10,13 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         a = SQLDatabase(self.dbs['pg_a'])
         b = SQLDatabase(self.dbs['pg_b'])
 
+        BaseA.metadata.create_all(a.engine)
+        BaseB.metadata.create_all(b.engine)
+
         a.compare_schemas(b)
 
-        table_a = a.table_from_name('users')
-        table_b = b.table_from_name('users')
+        table_a = a.table_from_name('person')
+        table_b = b.table_from_name('person')
 
         res_a = a.conn.execute(table_a.select())
         res_b = b.conn.execute(table_b.select())
