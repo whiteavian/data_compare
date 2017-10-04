@@ -4,8 +4,8 @@ from model_b_test import BaseB
 
 # parameter format borrowed from https://gist.github.com/sprin/5846464
 DB_CONFIG_DICT = {
-    'user': 'pgdb',
-    'password': 'pgdb',
+    'user': 'db_user',
+    'password': 'db_pass123',
     'host': 'localhost',
     'port': 5432,
 }
