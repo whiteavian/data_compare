@@ -1,4 +1,4 @@
-from data_compare.relational_data import RelationalData, STOP, ERROR
+from data_compare.relational_data import BEGIN_INDEX, RelationalData, STOP, ERROR
 from unittest import TestCase
 
 
@@ -27,6 +27,22 @@ class TestRelationalData (TestCase):
         self.rd.errors = []
         self.rd.shared_headers = set(['id', 'col1', 'col2'])
         self.rd.comparand = self.rd_comp
+
+    def test_sort_by_pkey(self):
+        """Ensure the primary key of each row is strictly less than each succeeding row."""
+        rd = RelationalData(
+            [self.headers,
+             (4, 'ooo', 'ppp'),
+             (2, 'out', 'ina'),
+             (1, 'foo', 'loo'),
+             (3, 'go', 'return'),
+            ],
+            'id')
+
+        for row in rd.data[BEGIN_INDEX:-1]:
+            next_row_index = rd.data.index(row) + 1
+            next_row = rd.data[next_row_index]
+            assert rd.pkey_val(row) < rd.pkey_val(next_row)
 
     def test_val(self):
         """Test that an arbitrary value is appropriately extracted from a row."""
