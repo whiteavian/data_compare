@@ -60,9 +60,9 @@ class SQLDatabase (object):
         #             general: [],
         #             col3: [difference6],
         #             col4: [difference7, difference8],
-        #             col5: None,
+        #             col5: [],
         #         },
-        #     table3: None,
+        #     table3: {},
         # }
         self.differences = {}
 # TODO
@@ -127,7 +127,7 @@ class SQLDatabase (object):
 
     def single_set_compare(self, a, b, prefix):
         for i in set(a) - set(b):
-            self.differences.append({'table_{}'.format(prefix): i})
+            self.differences['{}_{}'.format(i, prefix)] = {}
     
     def compare_table_schemas(self, table_name):
         ta = self.table_from_name(table_name)
@@ -137,7 +137,7 @@ class SQLDatabase (object):
         self.dual_set_compare(ta.foreign_keys, tb.foreign_keys)
         self.dual_set_compare(ta.indexes, tb.indexes)
 
-        self.differences.extend(compare(table_keys, ta, tb))
+        self.differences[table_name]['general'] = compare(table_keys, ta, tb)
 
         self.compare_table_columns(ta, tb)
 
@@ -146,16 +146,16 @@ class SQLDatabase (object):
         tb_col_names = set(col.name for col in tb.columns)
 
         for col_name in ta_col_names - tb_col_names:
-            self.differences.append({'table_a_{}'.format(ta.name): col_name})
+            self.differences[ta.name]['{}_a'.format(col_name)] = []
 
         for col_name in tb_col_names - ta_col_names:
-            self.differences.append({'table_b_{}'.format(tb.name): col_name})
+            self.differences[tb.name]['{}_b'.format(col_name)] = []
 
         for col_name in ta_col_names & tb_col_names:
             col_a = self.column_from_table(ta, col_name)
             col_b = self.comparator.column_from_table(tb, col_name)
             
-            self.differences.extend(compare(column_keys, col_a, col_b))
+            self.differences[ta.name][col_name] = compare(column_keys, col_a, col_b)
     
     def compare_data(self):
         """Compare the data of the two given databases.
@@ -195,6 +195,12 @@ class SQLDatabase (object):
     # Type + flavor is equivalent to another type + flavor
 
 def compare(attrs, compare_a, compare_b):
+    """Return the unequal attributes between a and b.
+
+    Given a set of attributes and two arbitrary objects, compare the values of
+    those attributes of each object. Return the comparisons that were unequal.
+    An example use case might be tables as the objects and schema parameters as
+    the attributes. """
     errors = []
     
     for attr in attrs:
@@ -202,9 +208,7 @@ def compare(attrs, compare_a, compare_b):
         b_val = getattr(compare_b, attr)
     
         if not a_val == b_val:
-            errors.append({
-                'a{}'.format(attr): a_val,
-                'b{}'.format(attr): b_val,
-                })
-    
+            errors['{}_a'.format(attr)] = a_val
+            errors['{}_b'.format(attr)] = b_val
+
     return errors
