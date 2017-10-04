@@ -1,3 +1,4 @@
+import atexit
 from time import time
 from sqlalchemy_utils import create_database, drop_database
 from unittest import TestCase
@@ -34,11 +35,11 @@ class SQLDatabaseTestCase (TestCase):
 
         map(create_database, dbs)
 
-        # Do this on exit.
-        map(drop_database, dbs)
+        # Ensure test databases are ephemeral.
+        atexit.register(map, drop_database, dbs)
 
 def main():
-    ts = TestSetup()
+    ts = SQLDatabaseTestCase()
     ts.test_create_dbs()
 
 if __name__ == "__main__":
