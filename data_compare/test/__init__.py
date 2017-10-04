@@ -12,13 +12,13 @@ class SQLDatabaseTestCase (TestCase):
     DB_PASS = 'db_pass123'
     HOST = 'localhost'
 
-    def __init__(self):
+    def setUp(self):
         CONN_STR_SUFFIX = time()
 
         PG_CONN_STR = "postgresql+psycopg2://{}:{}@{}:5432/pgdb_{}{{}}".format(
-                            self.DB_USER, self.DB_PASS, self.HOST, self.CONN_STR_SUFFIX)
+                            self.DB_USER, self.DB_PASS, self.HOST, CONN_STR_SUFFIX)
         MY_CONN_STR = "mysql+mysqldb://{}:{}@{}/mydb_{}{{}}".format(
-                            self.DB_USER, self.DB_PASS, self.HOST, self.CONN_STR_SUFFIX)
+                            self.DB_USER, self.DB_PASS, self.HOST, CONN_STR_SUFFIX)
         # Because of the way pyodbc requires odbc.ini, maybe this setup will not work. 
         # Maybe we should use pymssql driver instead? TODO
         # MS_CONN_STR = "mssql+pyodbc://{}:{}@?driver=SQL+Server+Native+Client+11.0".format(self.DB_USER, self.DB_PASS)
@@ -33,7 +33,7 @@ class SQLDatabaseTestCase (TestCase):
             'my_b': MY_CONN_STR.format("b"),
             # MS_CONN_STR,
         }
-        map(create_database, self.dbs)
+        map(create_database, self.dbs.values())
 
         # Ensure test databases are ephemeral.
-        atexit.register(map, drop_database, self.dbs)
+        atexit.register(map, drop_database, self.dbs.values())
