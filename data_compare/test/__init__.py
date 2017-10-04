@@ -13,34 +13,27 @@ class SQLDatabaseTestCase (TestCase):
     HOST = 'localhost'
 
     def __init__(self):
-        self.CONN_STR_SUFFIX = time()
+        CONN_STR_SUFFIX = time()
 
-        self.PG_CONN_STR = "postgresql+psycopg2://{}:{}@{}:5432/pgdb_{}".format(
+        PG_CONN_STR = "postgresql+psycopg2://{}:{}@{}:5432/pgdb_{}{{}}".format(
                             self.DB_USER, self.DB_PASS, self.HOST, self.CONN_STR_SUFFIX)
-        self.MY_CONN_STR = "mysql+mysqldb://{}:{}@{}/mydb_{}".format(
+        MY_CONN_STR = "mysql+mysqldb://{}:{}@{}/mydb_{}{{}}".format(
                             self.DB_USER, self.DB_PASS, self.HOST, self.CONN_STR_SUFFIX)
         # Because of the way pyodbc requires odbc.ini, maybe this setup will not work. 
         # Maybe we should use pymssql driver instead? TODO
-        # self.MS_CONN_STR = "mssql+pyodbc://{}:{}@?driver=SQL+Server+Native+Client+11.0".format(self.DB_USER, self.DB_PASS)
-        self.LITE_CONN_STR = "sqlite:///test{}.db".format(self.CONN_STR_SUFFIX)
+        # MS_CONN_STR = "mssql+pyodbc://{}:{}@?driver=SQL+Server+Native+Client+11.0".format(self.DB_USER, self.DB_PASS)
+        LITE_CONN_STR = "sqlite:///test{}{{}}.db".format(CONN_STR_SUFFIX)
 
-
-    def test_create_dbs(self):
-        dbs = [
-            self.LITE_CONN_STR,
-            self.PG_CONN_STR,
-            self.MY_CONN_STR,
-            # self.MS_CONN_STR,
-        ]
-
-        map(create_database, dbs)
+        self.dbs = {
+            'lite_a': LITE_CONN_STR.format("a"),
+            'lite_b': LITE_CONN_STR.format("b"),
+            'pg_a': PG_CONN_STR.format("a"),
+            'pg_b': PG_CONN_STR.format("b"),
+            'my_a': MY_CONN_STR.format("a"),
+            'my_b': MY_CONN_STR.format("b"),
+            # MS_CONN_STR,
+        }
+        map(create_database, self.dbs)
 
         # Ensure test databases are ephemeral.
-        atexit.register(map, drop_database, dbs)
-
-def main():
-    ts = SQLDatabaseTestCase()
-    ts.test_create_dbs()
-
-if __name__ == "__main__":
-    main()
+        atexit.register(map, drop_database, self.dbs)
