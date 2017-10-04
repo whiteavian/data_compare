@@ -1,8 +1,8 @@
 from data_compare.relational_data import RelationalData, STOP, ERROR
-from . import DataCompareTestCase
+from unittest import TestCase
 
 
-class TestRelationalData (DataCompareTestCase):
+class TestRelationalData (TestCase):
 
     def setUp(self):
         self.headers = ('id', 'col1', 'col2')

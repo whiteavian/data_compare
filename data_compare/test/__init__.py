@@ -3,7 +3,7 @@ from sqlalchemy_utils import create_database, drop_database
 from unittest import TestCase
 
 
-class DataCompareTestCase (TestCase):
+class SQLDatabaseTestCase (TestCase):
     """Create ephemeral databases for testing purposes, and destroy them after the
     tests have finished."""
     # TODO put these in a configuration file.
