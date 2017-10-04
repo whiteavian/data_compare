@@ -36,17 +36,19 @@ class RelationalData (object):
         # matching_row is called.
         self.length = len(data)
         self.pkey = pkey
-        # TODO will this be slow? Would it be (generally) faster to check if it's sorted first?
-        self.sort_by_pkey()
 
         self.headers = data[HEADER_INDEX]
+
+        # TODO will this be slow? Would it be (generally) faster to check if it's sorted first?
+        self.sort_by_pkey()
 
     def sort_by_pkey(self):
         """Sort the data by primary key.
 
         We make a later assumption that our data is in sorted by primary key order.
         Later methods will fail if sorting has not been completed."""
-        self.data = sorted(self.data, key=lambda row: self.pkey_val(row))
+        sorted_no_header = sorted(self.data[BEGIN_INDEX:], key=lambda row: self.pkey_val(row))
+        self.data = [self.data[HEADER_INDEX]] + sorted_no_header
 
     def val(self, row, attr_name):
         """Return the value of the row associated with the given header name."""
