@@ -201,7 +201,7 @@ def compare(attrs, compare_a, compare_b):
     those attributes of each object. Return the comparisons that were unequal.
     An example use case might be tables as the objects and schema parameters as
     the attributes. """
-    errors = []
+    errors = {}
     
     for attr in attrs:
         a_val = getattr(compare_a, attr)
