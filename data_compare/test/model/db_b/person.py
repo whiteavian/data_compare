@@ -4,7 +4,7 @@ from . import BaseB
 from sqlalchemy import Column, Integer, String
 
 
-class PersonB (BaseB):
+class Person (BaseB):
      __tablename__ = 'person'
 
      id = Column(Integer, primary_key=True)
