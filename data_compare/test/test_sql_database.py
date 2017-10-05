@@ -12,6 +12,8 @@ class TestSQLDatabase (SQLDatabaseTestCase):
 
         BaseA.metadata.create_all(a.engine)
         BaseB.metadata.create_all(b.engine)
+        a.metadata.reflect()
+        b.metadata.reflect()
 
         a.compare_schemas(b)
 
@@ -34,10 +36,3 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         a.insert(0, headers_a)
         b.insert(0, headers_b)
 
-        a
-        b
-
-        a_rd = RelationalData(a, pk_a)
-        b_rd = RelationalData(b, pk_b)
-        a_rd.compare(b_rd)
-        a_rd.errors
