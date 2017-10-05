@@ -1,11 +1,7 @@
 # copied from http://docs.sqlalchemy.org/en/latest/orm/tutorial.html to spare
 # creation of a pretend table.
-
-from sqlalchemy import Column, Integer, MetaData, String
-from sqlalchemy.ext.declarative import declarative_base
-
-
-BaseB = declarative_base(MetaData())
+from . import BaseB
+from sqlalchemy import Column, Integer, String
 
 
 class PersonB (BaseB):
