@@ -6,10 +6,10 @@ from data_compare.test.test_compare_schemas import (
 )
 
 
-# sa = SQLDatabase(DBA_CONN)
-# sb = SQLDatabase(DBB_CONN)
-#
-# sa.compare_schemas(sb)
+sa = SQLDatabase(DBA_CONN)
+sb = SQLDatabase(DBB_CONN)
+
+sa.compare_schemas(sb)
 #
 table_a = sa.table_from_name('users')
 table_b = sb.table_from_name('users')

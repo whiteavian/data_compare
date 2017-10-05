@@ -137,7 +137,10 @@ class SQLDatabase (object):
         self.dual_set_compare(ta.foreign_keys, tb.foreign_keys)
         self.dual_set_compare(ta.indexes, tb.indexes)
 
-        self.differences[table_name]['general'] = compare(table_keys, ta, tb)
+        try:
+            self.differences[table_name]['general'] = compare(table_keys, ta, tb)
+        except KeyError:
+            self.differences[table_name] = {'general': compare(table_keys, ta, tb)}
 
         self.compare_table_columns(ta, tb)
 
@@ -146,17 +149,26 @@ class SQLDatabase (object):
         tb_col_names = set(col.name for col in tb.columns)
 
         for col_name in ta_col_names - tb_col_names:
-            self.differences[ta.name]['{}_a'.format(col_name)] = []
+            try:
+                self.differences[ta.name]['{}_a'.format(col_name)] = []
+            except KeyError:
+                self.differences[ta.name] = {'{}_a'.format(col_name): []}
 
         for col_name in tb_col_names - ta_col_names:
-            self.differences[tb.name]['{}_b'.format(col_name)] = []
+            try:
+                self.differences[tb.name]['{}_b'.format(col_name)] = []
+            except KeyError:
+                self.differences[tb.name] = {'{}_b'.format(col_name): []}
 
         for col_name in ta_col_names & tb_col_names:
             col_a = self.column_from_table(ta, col_name)
             col_b = self.comparator.column_from_table(tb, col_name)
-            
-            self.differences[ta.name][col_name] = compare(column_keys, col_a, col_b)
-    
+
+            try:
+                self.differences[ta.name][col_name] = compare(column_keys, col_a, col_b)
+            except KeyError:
+                self.differences[ta.name] = {col_name: compare(column_keys, col_a, col_b)}
+
     def compare_data(self):
         """Compare the data of the two given databases.
     
