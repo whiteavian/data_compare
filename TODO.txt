@@ -11,6 +11,9 @@ TODO:
 - once we've done that, how should we present them?
 
 - convert to Python 3
+- server_default returns a pointer to a specific database text object, for example:
+    server_default=DefaultClause(<sqlalchemy.sql.elements.TextClause object at 0x7f9ea9220f90>)
+  This means that we can never make equivalence comparisons. Is there a way to get a more generic default?
 
 Relational Data
 # Eventual TODO: account for different data types

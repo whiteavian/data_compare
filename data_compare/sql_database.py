@@ -214,8 +214,11 @@ def compare(attrs, compare_a, compare_b):
     for attr in attrs:
         a_val = getattr(compare_a, attr)
         b_val = getattr(compare_b, attr)
-    
-        if not a_val == b_val:
+
+        # Allow for string equivalence as otherwise things like VARCHAR() do not match each other
+        # TODO investigate if this inequality is because of SQL flavor and possibly use that
+        # route to fix.
+        if not a_val == b_val and not (str(a_val) == str(b_val)):
             errors['{}_a'.format(attr)] = a_val
             errors['{}_b'.format(attr)] = b_val
 

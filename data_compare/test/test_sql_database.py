@@ -1,6 +1,5 @@
 from data_compare.sql_database import SQLDatabase
-from model_a_test import BaseA
-from model_b_test import BaseB
+from data_compare.model import BaseA, BaseB
 from . import SQLDatabaseTestCase
 
 
