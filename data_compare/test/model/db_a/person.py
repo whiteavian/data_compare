@@ -1,7 +1,8 @@
 # copied from http://docs.sqlalchemy.org/en/latest/orm/tutorial.html to spare
 # creation of a pretend table.
-from sqlalchemy import Column, Integer, String
+from .address import Address
 from . import BaseA
+from sqlalchemy import Column, ForeignKey, Integer, String
 
 
 class Person (BaseA):
@@ -11,3 +12,4 @@ class Person (BaseA):
      name = Column(String)
      fullname = Column(String)
      password = Column(String)
+     address_id = Column(ForeignKey(Address.id))
