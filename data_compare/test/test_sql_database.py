@@ -7,21 +7,21 @@ from . import SQLDatabaseTestCase
 class TestSQLDatabase (SQLDatabaseTestCase):
 
     def test_compare_a_b(self):
-        a = SQLDatabase(self.dbs['pg_a'])
-        b = SQLDatabase(self.dbs['pg_b'])
+        da = SQLDatabase(self.dbs['pg_a'])
+        db = SQLDatabase(self.dbs['pg_b'])
 
-        BaseA.metadata.create_all(a.engine)
-        BaseB.metadata.create_all(b.engine)
-        a.metadata.reflect()
-        b.metadata.reflect()
+        BaseA.metadata.create_all(da.engine)
+        BaseB.metadata.create_all(db.engine)
+        da.metadata.reflect()
+        db.metadata.reflect()
 
-        a.compare_schemas(b)
+        da.compare_schemas(db)
 
-        table_a = a.table_from_name('person')
-        table_b = b.table_from_name('person')
+        table_a = da.table_from_name('person')
+        table_b = db.table_from_name('person')
 
-        res_a = a.conn.execute(table_a.select())
-        res_b = b.conn.execute(table_b.select())
+        res_a = da.conn.execute(table_a.select())
+        res_b = db.conn.execute(table_b.select())
 
         a = res_a.fetchall()
         b = res_b.fetchall()
@@ -30,8 +30,8 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         headers_b = tuple(c.name for c in table_b.columns)
 
         # Add error in "real" case for when the length > 1
-        pk_a = a.table_pk_col_names(table_a)[0]
-        pk_b = b.table_pk_col_names(table_b)[0]
+        pk_a = da.table_pk_col_names(table_a)[0]
+        pk_b = db.table_pk_col_names(table_b)[0]
 
         a.insert(0, headers_a)
         b.insert(0, headers_b)
