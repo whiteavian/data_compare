@@ -1,3 +1,4 @@
+from collections import defaultdict
 from sqlalchemy import (
     create_engine,
     inspect,
@@ -64,7 +65,7 @@ class SQLDatabase (object):
         #         },
         #     table3: {},
         # }
-        self.differences = {}
+        self.differences = defaultdict(dict)
 # TODO
 # Use insepctor, instead: http://docs.sqlalchemy.org/en/latest/core/reflection.html
         self.metadata = MetaData(bind=self.engine, schema=schema)
@@ -119,28 +120,28 @@ class SQLDatabase (object):
         # add a and b not found tables to however we end up reporting errors
         # a_not_b_tables = set(db_a.tables) - common_table_names and vice versa
         map(self.compare_table_schemas, common_table_names)
-        print self.differences
 
-    def dual_set_compare(self, a, b):
-        self.single_set_compare(a, b, 'a')
-        self.single_set_compare(b, a, 'b')
+    def dual_set_compare(self, a, b, diff_key=None):
+        self.single_set_compare(a, b, 'a', diff_key)
+        self.single_set_compare(b, a, 'b', diff_key)
 
-    def single_set_compare(self, a, b, prefix):
+    def single_set_compare(self, a, b, prefix, diff_key):
         for i in set(a) - set(b):
-            self.differences['{}_{}'.format(i, prefix)] = {}
+            if diff_key:
+                self.differences[diff_key]['{}_{}'.format(i, prefix)] = {}
+            else:
+                self.differences['{}_{}'.format(i, prefix)] = {}
     
     def compare_table_schemas(self, table_name):
+        """Compare the general and column specific schemas of each table."""
         ta = self.table_from_name(table_name)
         tb = self.comparator.table_from_name(table_name)
 
-        self.dual_set_compare(ta.constraints, tb.constraints)
-        self.dual_set_compare(ta.foreign_keys, tb.foreign_keys)
-        self.dual_set_compare(ta.indexes, tb.indexes)
+        self.dual_set_compare(ta.constraints, tb.constraints, table_name)
+        self.dual_set_compare(ta.foreign_keys, tb.foreign_keys, table_name)
+        self.dual_set_compare(ta.indexes, tb.indexes, table_name)
 
-        try:
-            self.differences[table_name]['general'] = compare(table_keys, ta, tb)
-        except KeyError:
-            self.differences[table_name] = {'general': compare(table_keys, ta, tb)}
+        self.differences[table_name]['general'] = compare(table_keys, ta, tb)
 
         self.compare_table_columns(ta, tb)
 
@@ -149,25 +150,16 @@ class SQLDatabase (object):
         tb_col_names = set(col.name for col in tb.columns)
 
         for col_name in ta_col_names - tb_col_names:
-            try:
-                self.differences[ta.name]['{}_a'.format(col_name)] = []
-            except KeyError:
-                self.differences[ta.name] = {'{}_a'.format(col_name): []}
+            self.differences[ta.name]['{}_a'.format(col_name)] = []
 
         for col_name in tb_col_names - ta_col_names:
-            try:
-                self.differences[tb.name]['{}_b'.format(col_name)] = []
-            except KeyError:
-                self.differences[tb.name] = {'{}_b'.format(col_name): []}
+            self.differences[tb.name]['{}_b'.format(col_name)] = []
 
         for col_name in ta_col_names & tb_col_names:
             col_a = self.column_from_table(ta, col_name)
             col_b = self.comparator.column_from_table(tb, col_name)
 
-            try:
-                self.differences[ta.name][col_name] = compare(column_keys, col_a, col_b)
-            except KeyError:
-                self.differences[ta.name] = {col_name: compare(column_keys, col_a, col_b)}
+            self.differences[ta.name][col_name] = compare(column_keys, col_a, col_b)
 
     def compare_data(self):
         """Compare the data of the two given databases.
@@ -205,6 +197,10 @@ class SQLDatabase (object):
     
     # We need type equivalences. 
     # Type + flavor is equivalent to another type + flavor
+
+    def print_differences(self):
+        """Print the differences in a (hopefully) human understandable format."""
+        print self.differences
 
 def compare(attrs, compare_a, compare_b):
     """Return the unequal attributes between a and b.

@@ -16,6 +16,7 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         db.metadata.reflect()
 
         da.compare_schemas(db)
+        da.print_differences()
 
         table_a = da.table_from_name('person')
         table_b = db.table_from_name('person')
