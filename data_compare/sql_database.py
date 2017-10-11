@@ -36,6 +36,10 @@ column_keys = [
     'unique', 
 ]
 
+ignore_items = [
+    'PrimaryKeyConstraint',
+]
+
 
 class SQLDatabase (object):
 
@@ -126,7 +130,7 @@ class SQLDatabase (object):
         self.single_set_compare(b, a, 'b', diff_key)
 
     def single_set_compare(self, a, b, prefix, diff_key):
-        for i in set(a) - set(b):
+        for i in remove_ignore(set(a) - set(b)):
             if diff_key:
                 self.differences[diff_key]['{}_{}'.format(i, prefix)] = {}
             else:
@@ -223,3 +227,14 @@ def compare(attrs, compare_a, compare_b):
             errors['{}_b'.format(attr)] = b_val
 
     return errors
+
+def remove_ignore(diff_set):
+    """Remove items that begin with ignore strings."""
+    return_set = set(diff_set)
+
+    for item in diff_set:
+        for ignore in ignore_items:
+            if ignore in item:
+                return_set.remove(item)
+
+    return return_set

@@ -1,9 +1,15 @@
-from data_compare.sql_database import SQLDatabase
-from data_compare.model import BaseA, BaseB
+from data_compare.sql_database import SQLDatabase, ignore_items, remove_ignore
+from data_compare.test.model import BaseA, BaseB
 from . import SQLDatabaseTestCase
 
 
 class TestSQLDatabase (SQLDatabaseTestCase):
+
+    def test_remove_ignore(self):
+        """Confirm only expected remaining after adding ignore items to a set and running remove_ignore."""
+        expected_remaining = set(["fooa"])
+        test_set = set(["{}_a".format(ignore_items[0])]).union(expected_remaining)
+        assert remove_ignore(test_set) == expected_remaining
 
     def test_compare_a_b(self):
         da = SQLDatabase(self.dbs['pg_a'])
