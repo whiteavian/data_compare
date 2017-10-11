@@ -9,7 +9,7 @@ class Person (BaseA):
      __tablename__ = 'person'
 
      id = Column(Integer, primary_key=True)
-     name = Column(String)
-     fullname = Column(String)
-     password = Column(String)
+     name = Column(String(32))
+     fullname = Column(String(50))
+     password = Column(String(40))
      address_id = Column(ForeignKey(Address.id))
