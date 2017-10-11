@@ -1,4 +1,11 @@
-from data_compare.relational_data import BEGIN_INDEX, RelationalData, STOP, ERROR
+from data_compare.relational_data import (
+    BEGIN_INDEX,
+    COMPARAND_MISSING_ROWS,
+    ERROR,
+    MISSING_ROWS,
+    RelationalData,
+    STOP,
+)
 from unittest import TestCase
 
 
@@ -11,18 +18,20 @@ class TestRelationalData (TestCase):
              (1, 'foo', 'loo'),
              (2, 'out', 'ina'),
              (3, 'go', 'return'),
-             (4, 'ooo', 'ppp'),
             ],
             'id')
 
-        self.rd_comp = RelationalData(
-            [self.headers,
+        self.records_to_add_to_modifiers = [(5, 'nnn', 'lll')]
+        self.records_to_add_to_rd = [(4, 'ooo', 'ppp')]
+        rd_comp_data = self.rd.data + self.records_to_add_to_modifiers
+        self.rd_comp = RelationalData(rd_comp_data, self.rd.pkey)
+        self.rd.data.extend(self.records_to_add_to_rd)
+        records_to_change = [
              (1, 'oof', 'loo'),
              (2, 'out', 'eee'),
              (3, 'go', 'return'),
-             (3, 'nnn', 'lll'),
-            ],
-            'id')
+             (5, 'nnn', 'lll'),
+            ]
 
         self.rd.errors = []
         self.rd.shared_headers = set(['id', 'col1', 'col2'])
@@ -72,3 +81,23 @@ class TestRelationalData (TestCase):
             )
         assert self.rd.errors[0]['col1_1_original'] == 'foo'
         assert self.rd.errors[0]['col1_1_comparand'] == 'oof'
+
+    def test_compare(self):
+        self.rd.compare(self.rd_comp)
+        assert self.rd.errors
+        assert self.rd.errors[MISSING_ROWS] == self.records_to_add_to_rd
+        assert self.rd.errors[COMPARAND_MISSING_ROWS] == self.records_to_add_to_modifiers
+        assert False
+
+
+def modify_relational_data(relational_data, modifiers):
+    ret_data = []
+    for record_d in relational_data.data:
+        dont_add_flag = False
+        for record_m in modifiers.data:
+            if relational_data.pkey_val(record_d) == modifiers.pkey_val(record_m):
+                ret_data.append(record_m)
+                dont_add_flag = True
+        if not dont_add_flag:
+            ret_data.append(record_d)
+    return RelationalData(ret_data, relational_data.pkey)

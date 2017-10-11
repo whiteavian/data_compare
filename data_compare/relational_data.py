@@ -1,7 +1,11 @@
+from collections import defaultdict
+
 HEADER_INDEX = 0
 BEGIN_INDEX = 1
 STOP = "stop"
 ERROR = "error"
+MISSING_ROWS = "missing_rows"
+COMPARAND_MISSING_ROWS = "comparand_missing_rows"
 
 
 class RelationalData (object):
@@ -76,7 +80,7 @@ class RelationalData (object):
         self.comparand = comparand
         self.shared_headers = set(self.headers) & set(comparand.headers)
 
-        self.errors = []
+        self.errors = defaultdict(list)
         comparand.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
@@ -88,13 +92,13 @@ class RelationalData (object):
             if comparand_row == STOP:
                 break
             elif comparand_row == ERROR:
-                self.errors.append({'missing_row': row})
+                self.errors[MISSING_ROWS].append(row)
             else:
                 self.compare_row(row, comparand_row)
                 comparand_index += 1
 
         for row in comparand.data[comparand_index:]:
-            self.errors.append({'comparand_missing_row': row})
+            self.errors[COMPARAND_MISSING_ROWS].append(row)
 
     def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.
@@ -114,7 +118,7 @@ class RelationalData (object):
         if row_pkey < pkey_to_match:
             # As this method is typically called from the comparand, how can we set
             # errors on the original item, and not the comparand?
-            self.errors.append({'missing_row': row})
+            self.errors[MISSING_ROWS].append(row)
             i += 1
             return self.matching_row(pkey_to_match, i)
         elif row_pkey > pkey_to_match:
