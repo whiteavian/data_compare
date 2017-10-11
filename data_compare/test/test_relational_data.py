@@ -21,16 +21,14 @@ class TestRelationalData (TestCase):
             ],
             'id')
 
-        self.records_to_add_to_modifiers = [(5, 'nnn', 'lll')]
+        self.records_to_add_to_rd_comp = [(5, 'nnn', 'lll')]
         self.records_to_add_to_rd = [(4, 'ooo', 'ppp')]
-        rd_comp_data = self.rd.data + self.records_to_add_to_modifiers
+        rd_comp_data = self.rd.data + self.records_to_add_to_rd_comp
         self.rd_comp = RelationalData(rd_comp_data, self.rd.pkey)
         self.rd.data.extend(self.records_to_add_to_rd)
-        records_to_change = [
+        self.records_to_modify_in_rd_comp = [
              (1, 'oof', 'loo'),
              (2, 'out', 'eee'),
-             (3, 'go', 'return'),
-             (5, 'nnn', 'lll'),
             ]
 
         self.rd.errors = []
@@ -86,18 +84,9 @@ class TestRelationalData (TestCase):
         self.rd.compare(self.rd_comp)
         assert self.rd.errors
         assert self.rd.errors[MISSING_ROWS] == self.records_to_add_to_rd
-        assert self.rd.errors[COMPARAND_MISSING_ROWS] == self.records_to_add_to_modifiers
+        assert self.rd.errors[COMPARAND_MISSING_ROWS] == self.records_to_add_to_rd_comp
         assert False
 
 
 def modify_relational_data(relational_data, modifiers):
-    ret_data = []
-    for record_d in relational_data.data:
-        dont_add_flag = False
-        for record_m in modifiers.data:
-            if relational_data.pkey_val(record_d) == modifiers.pkey_val(record_m):
-                ret_data.append(record_m)
-                dont_add_flag = True
-        if not dont_add_flag:
-            ret_data.append(record_d)
-    return RelationalData(ret_data, relational_data.pkey)
+    pass

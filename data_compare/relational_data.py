@@ -6,6 +6,7 @@ STOP = "stop"
 ERROR = "error"
 MISSING_ROWS = "missing_rows"
 COMPARAND_MISSING_ROWS = "comparand_missing_rows"
+CHANGED_ROWS = "changed_rows"
 
 
 class RelationalData (object):
@@ -81,6 +82,7 @@ class RelationalData (object):
         self.shared_headers = set(self.headers) & set(comparand.headers)
 
         self.errors = defaultdict(list)
+        self.errors[CHANGED_ROWS] = []
         comparand.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
@@ -135,8 +137,7 @@ class RelationalData (object):
             comparand_val = self.comparand.val(comparand_row, header)
 
             if val != comparand_val:
-                self.errors.append({
-                    '{}_{}_original'.format(header, self.pkey_val(row)): val,
-                    '{}_{}_comparand'.format(header, 
-                        self.pkey_val(comparand_row)): comparand_val,
-                    })
+                try:
+                    self.errors[CHANGED_ROWS][self.pkey_val(row)][header] = (val, comparand_val)
+                except KeyError:
+                    self.errors[CHANGED_ROWS][self.pkey_val(row)] = {header: (val, comparand_val)}
