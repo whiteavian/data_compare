@@ -41,6 +41,7 @@ class RelationalData (object):
         # matching_row is called.
         self.length = len(data)
         self.pkey = pkey
+        self.errors = defaultdict(dict)
 
         self.headers = data[HEADER_INDEX]
 
@@ -81,8 +82,7 @@ class RelationalData (object):
         self.comparand = comparand
         self.shared_headers = set(self.headers) & set(comparand.headers)
 
-        self.errors = defaultdict(list)
-        self.errors[CHANGED_ROWS] = []
+        self.errors[CHANGED_ROWS] = defaultdict(dict)
         comparand.errors = []
 
         for row in self.data[BEGIN_INDEX:]:
@@ -94,13 +94,13 @@ class RelationalData (object):
             if comparand_row == STOP:
                 break
             elif comparand_row == ERROR:
-                self.errors[MISSING_ROWS].append(row)
+                self.errors[MISSING_ROWS][row] = None
             else:
                 self.compare_row(row, comparand_row)
                 comparand_index += 1
 
         for row in comparand.data[comparand_index:]:
-            self.errors[COMPARAND_MISSING_ROWS].append(row)
+            self.errors[COMPARAND_MISSING_ROWS][row] = None
 
     def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.

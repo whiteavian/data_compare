@@ -31,7 +31,6 @@ class TestRelationalData (TestCase):
              (2, 'out', 'eee'),
             ]
 
-        self.rd.errors = []
         self.rd.shared_headers = set(['id', 'col1', 'col2'])
         self.rd.comparand = self.rd_comp
 
@@ -83,9 +82,8 @@ class TestRelationalData (TestCase):
     def test_compare(self):
         self.rd.compare(self.rd_comp)
         assert self.rd.errors
-        assert self.rd.errors[MISSING_ROWS] == self.records_to_add_to_rd
-        assert self.rd.errors[COMPARAND_MISSING_ROWS] == self.records_to_add_to_rd_comp
-        assert False
+        assert self.rd.errors[MISSING_ROWS].keys() == self.records_to_add_to_rd
+        assert self.rd.errors[COMPARAND_MISSING_ROWS].keys() == self.records_to_add_to_rd_comp
 
 
 def modify_relational_data(relational_data, modifiers):
