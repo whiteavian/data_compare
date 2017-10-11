@@ -1,5 +1,6 @@
 from data_compare.relational_data import (
     BEGIN_INDEX,
+    CHANGED_ROWS,
     COMPARAND_MISSING_ROWS,
     ERROR,
     MISSING_ROWS,
@@ -76,8 +77,7 @@ class TestRelationalData (TestCase):
             (1, 'foo', 'loo'),
             (1, 'oof', 'loo')
             )
-        assert self.rd.errors[0]['col1_1_original'] == 'foo'
-        assert self.rd.errors[0]['col1_1_comparand'] == 'oof'
+        assert self.rd.errors[CHANGED_ROWS][1]['col1'] == ("foo", "oof")
 
     def test_compare(self):
         self.rd.compare(self.rd_comp)
@@ -85,6 +85,3 @@ class TestRelationalData (TestCase):
         assert self.rd.errors[MISSING_ROWS].keys() == self.records_to_add_to_rd
         assert self.rd.errors[COMPARAND_MISSING_ROWS].keys() == self.records_to_add_to_rd_comp
 
-
-def modify_relational_data(relational_data, modifiers):
-    pass
