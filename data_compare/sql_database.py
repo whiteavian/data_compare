@@ -101,9 +101,6 @@ class SQLDatabase (object):
 # has tables with columns with constraints and sequences
 # has rows with values
 
-# add ability to create different database types. Similar to BF's 
-# PGDBConf
-
 # We want to be able to apply these functions to full databases and
 # to tables. Can we make that possible?
 # This will require 
