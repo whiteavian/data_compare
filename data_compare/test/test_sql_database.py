@@ -12,8 +12,8 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         assert remove_ignore(test_set) == expected_remaining
 
     def test_compare_a_b(self):
-        da = SQLDatabase(self.dbs['pg_a'])
-        db = SQLDatabase(self.dbs['pg_b'])
+        da = SQLDatabase(self.dbs['my_a'])
+        db = SQLDatabase(self.dbs['my_b'])
 
         BaseA.metadata.create_all(da.engine)
         BaseB.metadata.create_all(db.engine)

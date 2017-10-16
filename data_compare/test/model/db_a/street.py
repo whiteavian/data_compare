@@ -6,4 +6,4 @@ class Street (BaseA):
      __tablename__ = 'street'
 
      id = Column(Integer, primary_key=True)
-     name = Column(String)
+     name = Column(String(40))

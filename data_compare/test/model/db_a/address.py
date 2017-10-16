@@ -7,5 +7,5 @@ class Address (BaseA):
      __tablename__ = 'address'
 
      id = Column(Integer, primary_key=True)
-     street_number = Column(String)
+     street_number = Column(String(10))
      street_id = Column(ForeignKey(Street.id))
