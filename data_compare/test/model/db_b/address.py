@@ -1,4 +1,4 @@
-from . import BaseB
+from .base import BaseB
 from sqlalchemy import Column, ForeignKey, Integer, String
 from .street import Street
 

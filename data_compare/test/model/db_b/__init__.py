@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData
-from sqlalchemy.ext.declarative import declarative_base
-
-BaseB = declarative_base(MetaData())
+from .address import Address
+from .base import BaseB
+from .person import Person
+from .street import Street

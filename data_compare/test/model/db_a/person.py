@@ -1,7 +1,7 @@
 # copied from http://docs.sqlalchemy.org/en/latest/orm/tutorial.html to spare
 # creation of a pretend table.
 from .address import Address
-from . import BaseA
+from .base import BaseA
 from sqlalchemy import Column, ForeignKey, Integer, String
 
 

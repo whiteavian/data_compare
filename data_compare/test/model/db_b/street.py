@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from . import BaseB
+from .base import BaseB
 
 
 class Street (BaseB):

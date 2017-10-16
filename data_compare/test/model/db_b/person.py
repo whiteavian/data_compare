@@ -1,6 +1,6 @@
 # copied from http://docs.sqlalchemy.org/en/latest/orm/tutorial.html to spare
 # creation of a pretend table.
-from . import BaseB
+from .base import BaseB
 from sqlalchemy import Column, Integer, String
 
 
