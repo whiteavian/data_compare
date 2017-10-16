@@ -1,9 +1,11 @@
 from collections import defaultdict
+from relational_data import RelationalData
 from sqlalchemy import (
     create_engine,
     inspect,
     MetaData,
 )
+from sqlalchemy.orm import sessionmaker
 
     # 'description', # I don't care about description right now.
 TABLE_KEYS = [
@@ -50,6 +52,8 @@ class SQLDatabase (object):
         self.schema = schema
         self.engine = create_engine(conn_string)
         self.conn = self.engine.connect()
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session(bind=self.conn)
 
         # The differences are a nesting of dicts and lists. The first level has table names, then a
         # general entry and column specific entries. If the table data or column list is empty,
@@ -173,8 +177,13 @@ class SQLDatabase (object):
         rows (rows db_a has, but db_b does not), or added rows (rows
         that db_b has, but db_a does not).
         A data comparison necessarily includes a schema comparison."""
-        pass
-    
+        self.relational_data = defaultdict(RelationalData)
+
+        for table in self.tables.values():
+            data = self.session.query(table).all()
+            assert False
+            self.relational_data[table.name] = RelationalData(data, "id")
+
     def compare_sequences(self):
         pass
     
@@ -231,7 +240,7 @@ def remove_ignore(diff_set):
 
     for item in diff_set:
         for ignore in IGNORE_ITEMS:
-            if ignore in item:
+            if ignore in str(item):
                 return_set.remove(item)
 
     return return_set
