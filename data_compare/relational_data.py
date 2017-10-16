@@ -43,10 +43,14 @@ class RelationalData (object):
         self.pkey = pkey
         self.errors = defaultdict(dict)
 
-        self.headers = data[HEADER_INDEX]
+        if data:
+            self.headers = data[HEADER_INDEX]
 
-        # TODO will this be slow? Would it be (generally) faster to check if it's sorted first?
-        self.sort_by_pkey()
+            # TODO will this be slow? Would it be (generally) faster to check if it's sorted first?
+            self.sort_by_pkey()
+        else:
+            self.headers = []
+
 
     def sort_by_pkey(self):
         """Sort the data by primary key.

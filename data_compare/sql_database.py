@@ -181,8 +181,10 @@ class SQLDatabase (object):
 
         for table in self.tables.values():
             data = self.session.query(table).all()
-            assert False
-            self.relational_data[table.name] = RelationalData(data, "id")
+            pks = self.table_pk_col_names(table)
+            assert len(pks) == 1, \
+                "Compare data only works with data having exactly one primary key column."
+            self.relational_data[table.name] = RelationalData(data, pks[0])
 
     def compare_sequences(self):
         pass
