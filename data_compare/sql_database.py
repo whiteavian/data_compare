@@ -166,6 +166,13 @@ class SQLDatabase (object):
 
             self.differences[ta.name][col_name] = compare(COLUMN_KEYS, col_a, col_b)
 
+    def table_rd(self, table):
+        data = self.session.query(table).all()
+        pks = self.table_pk_col_names(table)
+        assert len(pks) == 1, \
+            "Compare data only works with data having exactly one primary key column."
+        return RelationalData(data, pks[0])
+
     def compare_data(self):
         """Compare the data of the two given databases.
     
@@ -179,12 +186,15 @@ class SQLDatabase (object):
         A data comparison necessarily includes a schema comparison."""
         self.relational_data = defaultdict(RelationalData)
 
+        data_diffs = []
+
         for table in self.tables.values():
-            data = self.session.query(table).all()
-            pks = self.table_pk_col_names(table)
-            assert len(pks) == 1, \
-                "Compare data only works with data having exactly one primary key column."
-            self.relational_data[table.name] = RelationalData(data, pks[0])
+            rd = self.table_rd(table)
+            comparator_table = self.comparator.table_from_name(table.name)
+            rd.compare(self.comparator.table_rd(comparator_table))
+            data_diffs.append(rd.errors)
+
+        return data_diffs
 
     def compare_sequences(self):
         pass
