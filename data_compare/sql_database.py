@@ -113,14 +113,14 @@ class SQLDatabase (object):
     # def common_elements(db_attr, attr_attr):
     #     return set(getattr(a, attr_attr) for a in getattr(db_a, db_attr) if getattr(db_b, db_attr))
 
-    def compare_schemas(self, comparator):
+    def compare_schemas(self, comparand):
         """Compare the schemas of the two given databases.
     
         Compare the schema of the database associated with self with the schema of
-        the comparator."""
-        self.comparator = comparator
-        common_table_names = set(self.table_names) & set(comparator.table_names)
-        self.dual_set_compare(self.table_names, comparator.table_names)
+        the comparand."""
+        self.comparand = comparand
+        common_table_names = set(self.table_names) & set(comparand.table_names)
+        self.dual_set_compare(self.table_names, comparand.table_names)
 
         # add a and b not found tables to however we end up reporting errors
         # a_not_b_tables = set(db_a.tables) - common_table_names and vice versa
@@ -140,7 +140,7 @@ class SQLDatabase (object):
     def compare_table_schemas(self, table_name):
         """Compare the general and column specific schemas of each table."""
         ta = self.table_from_name(table_name)
-        tb = self.comparator.table_from_name(table_name)
+        tb = self.comparand.table_from_name(table_name)
 
         self.dual_set_compare(ta.constraints, tb.constraints, table_name)
         self.dual_set_compare(ta.foreign_keys, tb.foreign_keys, table_name)
@@ -162,7 +162,7 @@ class SQLDatabase (object):
 
         for col_name in ta_col_names & tb_col_names:
             col_a = self.column_from_table(ta, col_name)
-            col_b = self.comparator.column_from_table(tb, col_name)
+            col_b = self.comparand.column_from_table(tb, col_name)
 
             self.differences[ta.name][col_name] = compare(COLUMN_KEYS, col_a, col_b)
 
@@ -190,8 +190,8 @@ class SQLDatabase (object):
 
         for table in self.tables.values():
             rd = self.table_rd(table)
-            comparator_table = self.comparator.table_from_name(table.name)
-            rd.compare(self.comparator.table_rd(comparator_table))
+            comparand_table = self.comparand.table_from_name(table.name)
+            rd.compare(self.comparand.table_rd(comparand_table))
             data_diffs.append(rd.errors)
 
         return data_diffs
