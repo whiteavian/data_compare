@@ -6,7 +6,7 @@ from sqlalchemy import (
 )
 
     # 'description', # I don't care about description right now.
-table_keys = [
+TABLE_KEYS = [
     'fullname',
     'name',
     'primary_key',
@@ -24,7 +24,7 @@ table_keys = [
     # 'index',
     # 'primary_key',
 
-column_keys = [
+COLUMN_KEYS = [
     'autoincrement', 
     'is_literal', 
     'key', 
@@ -36,7 +36,7 @@ column_keys = [
     'unique', 
 ]
 
-ignore_items = [
+IGNORE_ITEMS = [
     'PrimaryKeyConstraint',
 ]
 
@@ -142,7 +142,7 @@ class SQLDatabase (object):
         self.dual_set_compare(ta.foreign_keys, tb.foreign_keys, table_name)
         self.dual_set_compare(ta.indexes, tb.indexes, table_name)
 
-        self.differences[table_name]['general'] = compare(table_keys, ta, tb)
+        self.differences[table_name]['general'] = compare(TABLE_KEYS, ta, tb)
 
         self.compare_table_columns(ta, tb)
 
@@ -160,7 +160,7 @@ class SQLDatabase (object):
             col_a = self.column_from_table(ta, col_name)
             col_b = self.comparator.column_from_table(tb, col_name)
 
-            self.differences[ta.name][col_name] = compare(column_keys, col_a, col_b)
+            self.differences[ta.name][col_name] = compare(COLUMN_KEYS, col_a, col_b)
 
     def compare_data(self):
         """Compare the data of the two given databases.
@@ -230,7 +230,7 @@ def remove_ignore(diff_set):
     return_set = set(diff_set)
 
     for item in diff_set:
-        for ignore in ignore_items:
+        for ignore in IGNORE_ITEMS:
             if ignore in item:
                 return_set.remove(item)
 
