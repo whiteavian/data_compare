@@ -168,7 +168,7 @@ class SQLDatabase (object):
 
     def table_rd(self, table):
         data = self.session.query(table).all()
-        headers = [c.name for c in table.columns]
+        headers = [tuple(c.name for c in table.columns)]
         pks = self.table_pk_col_names(table)
         assert len(pks) == 1, \
             "Compare data only works with data having exactly one primary key column."
