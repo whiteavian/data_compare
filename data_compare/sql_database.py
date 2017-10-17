@@ -174,7 +174,7 @@ class SQLDatabase (object):
             "Compare data only works with data having exactly one primary key column."
         return RelationalData(headers + data, pks[0])
 
-    def compare_data(self):
+    def compare_data(self, update=False):
         """Compare the data of the two given databases.
     
         Compare the data of database a (db_a) with the data of 
@@ -194,6 +194,8 @@ class SQLDatabase (object):
             comparand_table = self.comparand.table_from_name(table.name)
             rd.compare(self.comparand.table_rd(comparand_table))
             data_diffs.append(rd.errors)
+            if update:
+                assert False
 
         return data_diffs
 
