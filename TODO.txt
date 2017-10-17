@@ -7,7 +7,7 @@ TODO:
 - Can we turn our discrepancies into formats that will allow for updating the comparand to match the original?
 
 - docstrings in sql_database
-- how should we store errors?
+- continue to hone error storage format
 - once we've done that, how should we present them?
 
 - convert to Python 3
