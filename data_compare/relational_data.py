@@ -96,6 +96,7 @@ class RelationalData (object):
                 comparand.matching_row(self.pkey_val(row), comparand_index)
 
             if comparand_row == STOP:
+                self.errors[MISSING_ROWS][row] = None
                 break
             elif comparand_row == ERROR:
                 self.errors[MISSING_ROWS][row] = None
