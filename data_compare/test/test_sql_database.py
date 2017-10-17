@@ -68,7 +68,7 @@ class TestSQLDatabase (SQLDatabaseTestCase):
             da.session.commit()
             db.session.commit()
 
-            data_diffs = da.compare_data()
+            da.update_data_to_match_comparand()
 
             table_a = da.table_from_name('person')
             table_b = db.table_from_name('person')

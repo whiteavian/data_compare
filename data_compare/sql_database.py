@@ -1,5 +1,10 @@
 from collections import defaultdict
-from relational_data import RelationalData
+from relational_data import (
+    CHANGED_ROWS,
+    COMPARAND_MISSING_ROWS,
+    RelationalData,
+    MISSING_ROWS,
+)
 from sqlalchemy import (
     create_engine,
     inspect,
@@ -195,8 +200,29 @@ class SQLDatabase (object):
 
         return self.data_diffs
 
-    def update_data(self):
-        pass
+    def update_data_to_match_comparand(self):
+        data_diffs = self.compare_data()
+        for table_name in data_diffs:
+            table = self.table_from_name(table_name)
+            table_col_names = [c.name for c in table.columns]
+
+            comparand_table = self.comparand.table_from_name(table.name)
+            comparand_col_names = [c.name for c in comparand_table.columns]
+
+            # TODO learn about engines/connections/sessions and reconsider how to insert
+            # into arbitrary tables.
+            active_diffs = data_diffs[table_name]
+            for row in active_diffs[COMPARAND_MISSING_ROWS].keys():
+                # TODO check the column vs header order assumption
+                insert_values = {}
+
+                for i in range(0, len(comparand_col_names)):
+                    insert_values[comparand_col_names[i]] = row[i]
+
+                for col_name in set(comparand_col_names) - set(table_col_names):
+                    del insert_values[col_name]
+
+                self.engine.execute(table.insert(), **insert_values)
 
     def compare_sequences(self):
         pass
