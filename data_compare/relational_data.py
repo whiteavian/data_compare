@@ -87,7 +87,7 @@ class RelationalData (object):
         self.shared_headers = set(self.headers) & set(comparand.headers)
 
         self.errors[CHANGED_ROWS] = defaultdict(dict)
-        comparand.errors = []
+        comparand.errors = defaultdict(dict)
 
         for row in self.data[BEGIN_INDEX:]:
             # I don't love that we return a tuple here, but I prefer it to setting
@@ -125,7 +125,7 @@ class RelationalData (object):
         if row_pkey < pkey_to_match:
             # As this method is typically called from the comparand, how can we set
             # errors on the original item, and not the comparand?
-            self.errors[MISSING_ROWS].append(row)
+            self.errors[MISSING_ROWS][row] = None
             i += 1
             return self.matching_row(pkey_to_match, i)
         elif row_pkey > pkey_to_match:

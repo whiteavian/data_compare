@@ -8,6 +8,7 @@ TODO:
 
 - docstrings in sql_database
 - continue to hone error storage format
+- get errors from comparand and put them into the original
 - once we've done that, how should we present them?
 
 - convert to Python 3

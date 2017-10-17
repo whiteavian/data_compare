@@ -195,7 +195,7 @@ class SQLDatabase (object):
             rd.compare(self.comparand.table_rd(comparand_table))
             data_diffs.append(rd.errors)
             if update:
-                assert False
+                pass
 
         return data_diffs
 
