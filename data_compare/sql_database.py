@@ -202,6 +202,7 @@ class SQLDatabase (object):
 
     def update_data_to_match_comparand(self):
         data_diffs = self.compare_data()
+        # TODO sort data_diffs by Metadata.sorted_tables
         for table_name in data_diffs:
             table = self.table_from_name(table_name)
             table_col_names = [c.name for c in table.columns]
@@ -223,6 +224,17 @@ class SQLDatabase (object):
                     del insert_values[col_name]
 
                 self.engine.execute(table.insert(), **insert_values)
+
+            for row in active_diffs[CHANGED_ROWS]:
+                pass
+
+            for row in active_diffs[MISSING_ROWS].keys():
+                # TODO don't forget that assuming the pk is the first item isn't a valid
+                # assumption. Definitely refactor all of this.
+                pk = self.table_pk_col_names(table)[0]
+                pk_val = row[0]
+
+                self.engine.execute(table.delete(), {pk: pk_val})
 
     def compare_sequences(self):
         pass
