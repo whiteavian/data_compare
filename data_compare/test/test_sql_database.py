@@ -1,5 +1,10 @@
 from data_compare.sql_database import SQLDatabase, IGNORE_ITEMS, remove_ignore
 from data_compare.test.model import BaseA, BaseB
+from data_compare.test.model.db_a import (
+    Address,
+    Person,
+    Street,
+)
 from . import SQLDatabaseTestCase
 
 
@@ -22,8 +27,18 @@ class TestSQLDatabase (SQLDatabaseTestCase):
             db.metadata.reflect()
 
             da.compare_schemas(db)
-            da.compare_data()
             da.print_differences()
+
+            # with da.session.begin():
+            s1 = Street(name='Cedar')
+            s2 = Street(name='MLK')
+            a1 = Address(street_number=5, street=s1)
+            p1 = Person(
+                name="Constance", fullname="Constance Filbert", password="password", address=a1)
+
+            map(da.session.add, [s1, s2, a1, p1])
+            da.session.commit()
+            data_diffs = da.compare_data()
 
             table_a = da.table_from_name('person')
             table_b = db.table_from_name('person')

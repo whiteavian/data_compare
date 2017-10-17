@@ -168,10 +168,11 @@ class SQLDatabase (object):
 
     def table_rd(self, table):
         data = self.session.query(table).all()
+        headers = [c.name for c in table.columns]
         pks = self.table_pk_col_names(table)
         assert len(pks) == 1, \
             "Compare data only works with data having exactly one primary key column."
-        return RelationalData(data, pks[0])
+        return RelationalData(headers + data, pks[0])
 
     def compare_data(self):
         """Compare the data of the two given databases.
