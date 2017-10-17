@@ -225,8 +225,12 @@ class SQLDatabase (object):
 
                 self.engine.execute(table.insert(), **insert_values)
 
-            for row in active_diffs[CHANGED_ROWS]:
-                pass
+            for id in active_diffs[CHANGED_ROWS]:
+                changed_columns = active_diffs[CHANGED_ROWS][id]
+
+                for col in changed_columns:
+                    self.engine.execute(table.update().
+                        values({col: changed_columns[col][1]}).where(table.c.id == id))
 
             for row in active_diffs[MISSING_ROWS].keys():
                 # TODO don't forget that assuming the pk is the first item isn't a valid
