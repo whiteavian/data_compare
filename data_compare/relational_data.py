@@ -107,6 +107,15 @@ class RelationalData (object):
         for row in comparand.data[comparand_index:]:
             self.errors[COMPARAND_MISSING_ROWS][row] = None
 
+        # Will it ever be the case the comparand errors contains anything but MISSING_ROWS?
+        # If so, we will overwrite self.errors values or comparand.errors[COMPARAND_MISSING_ROWS]
+        # here.
+        # TODO confirm and ensure tests will catch related issues
+        if MISSING_ROWS in self.comparand.errors:
+            self.comparand.errors[COMPARAND_MISSING_ROWS] = self.comparand.errors[MISSING_ROWS]
+            del self.comparand.errors[MISSING_ROWS]
+            self.errors.update(self.comparand.errors)
+
     def matching_row(self, pkey_to_match, i):
         """Return the row that has the given primary key value.
 
