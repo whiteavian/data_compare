@@ -212,7 +212,6 @@ class SQLDatabase (object):
             # into arbitrary tables.
             active_diffs = data_diffs[table_name]
 
-
             self.add_missing_rows(table, active_diffs[COMPARAND_MISSING_ROWS].keys())
             self.update_changed_rows(table, active_diffs[CHANGED_ROWS])
             self.delete_missing_rows(table, active_diffs[MISSING_ROWS].keys())
@@ -222,6 +221,7 @@ class SQLDatabase (object):
 
         comparand_table = self.comparand.table_from_name(table.name)
         comparand_col_names = [c.name for c in comparand_table.columns]
+
         for row in rows:
             # TODO check the column vs header order assumption
             insert_values = {}
@@ -233,7 +233,6 @@ class SQLDatabase (object):
                 del insert_values[col_name]
 
             self.engine.execute(table.insert(), **insert_values)
-
 
     def update_changed_values(self, table, values):
         for id in values:
