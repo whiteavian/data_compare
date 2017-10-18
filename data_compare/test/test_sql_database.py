@@ -21,6 +21,19 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         test_set = set(["{}_a".format(IGNORE_ITEMS[0])]).union(expected_remaining)
         assert remove_ignore(test_set) == expected_remaining
 
+    def test_delete_missing_rows(self):
+        """Confirm missing rows are deleted from the database."""
+        da = SQLDatabase(self.dbs['my_a'])
+        BaseA.metadata.create_all(da.engine)
+        da.metadata.reflect()
+        table = da.table_from_name("address")
+        da.engine.execute(table.insert(), {'street_number':1, 'id': 1})
+
+
+    def test_add_missing_rows(self):
+        """Confirm missing rows are added to the database."""
+        pass
+
     def test_compare_a_b(self):
         try:
             da = SQLDatabase(self.dbs['my_a'])
@@ -69,6 +82,7 @@ class TestSQLDatabase (SQLDatabaseTestCase):
             db.session.commit()
 
             da.update_data_to_match_comparand()
+            assert False
             da.compare_data()
 
             table_a = da.table_from_name('person')

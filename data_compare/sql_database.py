@@ -203,7 +203,7 @@ class SQLDatabase (object):
     def update_data_to_match_comparand(self):
         data_diffs = self.compare_data()
         # TODO sort data_diffs by Metadata.sorted_tables
-        sorted_table_names = [t.name for t in self.metadata.sorted_tables if t in data_diffs.keys()]
+        sorted_table_names = [t.name for t in self.metadata.sorted_tables if t.name in data_diffs.keys()]
 
         for table_name in sorted_table_names:
             table = self.table_from_name(table_name)
@@ -213,10 +213,19 @@ class SQLDatabase (object):
             active_diffs = data_diffs[table_name]
 
             self.add_missing_rows(table, active_diffs[COMPARAND_MISSING_ROWS].keys())
-            self.update_changed_rows(table, active_diffs[CHANGED_ROWS])
+            self.update_changed_values(table, active_diffs[CHANGED_ROWS])
+
+        for table_name in reversed(sorted_table_names):
+            table = self.table_from_name(table_name)
+
+            # TODO learn about engines/connections/sessions and reconsider how to insert
+            # into arbitrary tables.
+            active_diffs = data_diffs[table_name]
+
             self.delete_missing_rows(table, active_diffs[MISSING_ROWS].keys())
 
     def add_missing_rows(self, table, rows):
+        """Insert the given rows into the given table."""
         table_col_names = [c.name for c in table.columns]
 
         comparand_table = self.comparand.table_from_name(table.name)
@@ -235,6 +244,7 @@ class SQLDatabase (object):
             self.engine.execute(table.insert(), **insert_values)
 
     def update_changed_values(self, table, values):
+        """Update the given table with the given values."""
         for id in values:
             changed_columns = values[id]
 
