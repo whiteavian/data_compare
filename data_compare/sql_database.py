@@ -235,9 +235,9 @@ class SQLDatabase (object):
             self.engine.execute(table.insert(), **insert_values)
 
 
-    def update_changed_rows(self, table, rows):
-        for id in rows:
-            changed_columns = rows[id]
+    def update_changed_values(self, table, values):
+        for id in values:
+            changed_columns = values[id]
 
             for col in changed_columns:
                 self.engine.execute(table.update().
