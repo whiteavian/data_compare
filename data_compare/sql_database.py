@@ -203,7 +203,9 @@ class SQLDatabase (object):
     def update_data_to_match_comparand(self):
         data_diffs = self.compare_data()
         # TODO sort data_diffs by Metadata.sorted_tables
-        for table_name in data_diffs:
+        sorted_table_names = [t.name for t in self.metadata.sorted_tables if t in data_diffs.keys()]
+
+        for table_name in sorted_table_names:
             table = self.table_from_name(table_name)
             table_col_names = [c.name for c in table.columns]
 
