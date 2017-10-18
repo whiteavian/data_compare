@@ -207,40 +207,50 @@ class SQLDatabase (object):
 
         for table_name in sorted_table_names:
             table = self.table_from_name(table_name)
-            table_col_names = [c.name for c in table.columns]
-
-            comparand_table = self.comparand.table_from_name(table.name)
-            comparand_col_names = [c.name for c in comparand_table.columns]
 
             # TODO learn about engines/connections/sessions and reconsider how to insert
             # into arbitrary tables.
             active_diffs = data_diffs[table_name]
-            for row in active_diffs[COMPARAND_MISSING_ROWS].keys():
-                # TODO check the column vs header order assumption
-                insert_values = {}
 
-                for i in range(0, len(comparand_col_names)):
-                    insert_values[comparand_col_names[i]] = row[i]
 
-                for col_name in set(comparand_col_names) - set(table_col_names):
-                    del insert_values[col_name]
+            self.add_missing_rows(table, active_diffs[COMPARAND_MISSING_ROWS].keys())
+            self.update_changed_rows(table, active_diffs[CHANGED_ROWS])
+            self.delete_missing_rows(table, active_diffs[MISSING_ROWS].keys())
 
-                self.engine.execute(table.insert(), **insert_values)
+    def add_missing_rows(self, table, rows):
+        table_col_names = [c.name for c in table.columns]
 
-            for id in active_diffs[CHANGED_ROWS]:
-                changed_columns = active_diffs[CHANGED_ROWS][id]
+        comparand_table = self.comparand.table_from_name(table.name)
+        comparand_col_names = [c.name for c in comparand_table.columns]
+        for row in rows:
+            # TODO check the column vs header order assumption
+            insert_values = {}
 
-                for col in changed_columns:
-                    self.engine.execute(table.update().
-                        values({col: changed_columns[col][1]}).where(table.c.id == id))
+            for i in range(0, len(comparand_col_names)):
+                insert_values[comparand_col_names[i]] = row[i]
 
-            for row in active_diffs[MISSING_ROWS].keys():
-                # TODO don't forget that assuming the pk is the first item isn't a valid
-                # assumption. Definitely refactor all of this.
-                pk = self.table_pk_col_names(table)[0]
-                pk_val = row[0]
+            for col_name in set(comparand_col_names) - set(table_col_names):
+                del insert_values[col_name]
 
-                self.engine.execute(table.delete(), {pk: pk_val})
+            self.engine.execute(table.insert(), **insert_values)
+
+
+    def update_changed_rows(self, table, rows):
+        for id in rows:
+            changed_columns = rows[id]
+
+            for col in changed_columns:
+                self.engine.execute(table.update().
+                    values({col: changed_columns[col][1]}).where(table.c.id == id))
+
+    def delete_missing_rows(self, table, rows):
+        for row in rows:
+            # TODO don't forget that assuming the pk is the first item isn't a valid
+            # assumption. Definitely refactor all of this.
+            pk = self.table_pk_col_names(table)[0]
+            pk_val = row[0]
+
+            self.engine.execute(table.delete(), {pk: pk_val})
 
     def compare_sequences(self):
         pass
