@@ -59,16 +59,13 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         pass
 
     def test_compare_a_b(self):
-        da = SQLDatabase(self.dbs['my_a'])
-        db = SQLDatabase(self.dbs['my_b'])
+        BaseA.metadata.create_all(self.da.engine)
+        BaseB.metadata.create_all(self.db.engine)
 
-        BaseA.metadata.create_all(da.engine)
-        BaseB.metadata.create_all(db.engine)
-        da.metadata.reflect()
-        db.metadata.reflect()
+        self.da.metadata.reflect()
+        self.db.metadata.reflect()
 
         self.da.compare_schemas(self.db)
-        self.da.print_differences()
 
         # with self.da.session.begin():
         s1 = StreetA(id=1, name='Cedar')
