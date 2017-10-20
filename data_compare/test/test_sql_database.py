@@ -11,6 +11,7 @@ from data_compare.test.model.db_b import (
     Street as StreetB,
 )
 from . import SQLDatabaseTestCase
+from sqlalchemy.sql import select
 
 
 class TestSQLDatabase (SQLDatabaseTestCase):
@@ -27,7 +28,21 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         BaseA.metadata.create_all(da.engine)
         da.metadata.reflect()
         table = da.table_from_name("address")
+
+        q = select([table])
+        table_rows = [r for r in da.conn.execute(q)]
+        assert not table_rows
+
         da.engine.execute(table.insert(), {'street_number':1, 'id': 1})
+
+        table_rows = [r for r in da.conn.execute(q)]
+        assert table_rows
+
+        rows = [(1, 1, None,)]
+        da.delete_missing_rows(table, rows)
+
+        table_rows = [r for r in da.conn.execute(q)]
+        assert not table_rows
 
 
     def test_add_missing_rows(self):
@@ -82,7 +97,6 @@ class TestSQLDatabase (SQLDatabaseTestCase):
             db.session.commit()
 
             da.update_data_to_match_comparand()
-            assert False
             da.compare_data()
 
             table_a = da.table_from_name('person')
