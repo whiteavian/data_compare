@@ -224,6 +224,8 @@ class SQLDatabase (object):
 
             self.delete_missing_rows(table, active_diffs[MISSING_ROWS].keys())
 
+        self.session.commit()
+
     def add_missing_rows(self, table, rows):
         """Insert the given rows into the given table."""
         table_col_names = [c.name for c in table.columns]
@@ -241,7 +243,7 @@ class SQLDatabase (object):
             for col_name in set(comparand_col_names) - set(table_col_names):
                 del insert_values[col_name]
 
-            self.engine.execute(table.insert(), **insert_values)
+            self.session.execute(table.insert().values(**insert_values))
 
     def update_changed_values(self, table, values):
         """Update the given table with the given values."""
@@ -249,7 +251,7 @@ class SQLDatabase (object):
             changed_columns = values[id]
 
             for col in changed_columns:
-                self.engine.execute(table.update().
+                self.session.execute(table.update().
                     values({col: changed_columns[col][1]}).where(table.c.id == id))
 
     def delete_missing_rows(self, table, rows):
@@ -259,7 +261,7 @@ class SQLDatabase (object):
             pk = self.table_pk_col_names(table)[0]
             pk_val = row[0]
 
-            self.engine.execute(table.delete(), {pk: pk_val})
+            self.session.execute(table.delete(getattr(table.c, pk) == pk_val))
 
     def compare_sequences(self):
         pass
