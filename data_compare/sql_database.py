@@ -202,14 +202,11 @@ class SQLDatabase (object):
 
     def update_data_to_match_comparand(self):
         data_diffs = self.compare_data()
-        # TODO sort data_diffs by Metadata.sorted_tables
         sorted_table_names = [t.name for t in self.metadata.sorted_tables if t.name in data_diffs.keys()]
 
         for table_name in sorted_table_names:
             table = self.table_from_name(table_name)
 
-            # TODO learn about engines/connections/sessions and reconsider how to insert
-            # into arbitrary tables.
             active_diffs = data_diffs[table_name]
 
             self.add_missing_rows(table, active_diffs[COMPARAND_MISSING_ROWS].keys())
@@ -218,8 +215,6 @@ class SQLDatabase (object):
         for table_name in reversed(sorted_table_names):
             table = self.table_from_name(table_name)
 
-            # TODO learn about engines/connections/sessions and reconsider how to insert
-            # into arbitrary tables.
             active_diffs = data_diffs[table_name]
 
             self.delete_missing_rows(table, active_diffs[MISSING_ROWS].keys())

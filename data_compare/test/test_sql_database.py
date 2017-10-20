@@ -30,18 +30,19 @@ class TestSQLDatabase (SQLDatabaseTestCase):
         table = da.table_from_name("address")
 
         q = select([table])
-        table_rows = [r for r in da.conn.execute(q)]
+        table_rows = [r for r in da.session.execute(q)]
         assert not table_rows
 
-        da.engine.execute(table.insert(), {'street_number':1, 'id': 1})
+        da.session.execute(table.insert().values({'street_number':1, 'id': 1}))
+        da.session.commit()
 
-        table_rows = [r for r in da.conn.execute(q)]
+        table_rows = [r for r in da.session.execute(q)]
         assert table_rows
 
         rows = [(1, 1, None,)]
         da.delete_missing_rows(table, rows)
 
-        table_rows = [r for r in da.conn.execute(q)]
+        table_rows = [r for r in da.session.execute(q)]
         assert not table_rows
 
 
