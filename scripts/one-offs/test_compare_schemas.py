@@ -1,5 +1,5 @@
-from data_compare.test.model_a_test import BaseA
-from data_compare.test.model_b_test import BaseB
+from data_compare.test.model.db_a import BaseA
+from data_compare.test.model.db_b import BaseB
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, drop_database
 
@@ -44,11 +44,12 @@ from data_compare.test.model.db_b.person import Person as PersonB
 
 
 plant_a = PersonA(id=1, name="Plant", fullname="Green Plant", password="soil")
-tree_a = PersonA(id=2, name="Tree", fullname="Treefriend", password="sunshine")
-lamp_a = PersonA(id=3, name="Floor", fullname="Floorlamp", password="bright")
-
 plant_b = PersonB(id=1, nameb="Plant", fullname="Green Plant", password="soil")
+
+tree_a = PersonA(id=2, name="Tree", fullname="Treefriend", password="sunshine")
 tree_b = PersonB(id=2, nameb="Tree", fullname="Treefiend", password="sunshine")
+
+lamp_a = PersonA(id=3, name="Floor", fullname="Floorlamp", password="bright")
 lamp_b = PersonB(id=4, nameb="Floor", fullname="Floorlamp", password="bright")
 
 
