@@ -170,16 +170,18 @@ class SQLDatabase (object):
         tb_col_names = set(col.name for col in tb.columns)
 
         for col_name in ta_col_names - tb_col_names:
-            self.differences[ta.name]['{}_a'.format(col_name)] = []
+            self.differences[ta.name]['{}_a'.format(col_name)] = {}
 
         for col_name in tb_col_names - ta_col_names:
-            self.differences[tb.name]['{}_b'.format(col_name)] = []
+            self.differences[tb.name]['{}_b'.format(col_name)] = {}
 
         for col_name in ta_col_names & tb_col_names:
             col_a = self.column_from_table(ta, col_name)
             col_b = self.comparand.column_from_table(tb, col_name)
 
-            self.differences[ta.name][col_name] = compare(COLUMN_KEYS, col_a, col_b)
+            results = compare(COLUMN_KEYS, col_a, col_b)
+            if results:
+                self.differences[ta.name][col_name] = results
 
     def relational_data_for_table(self, table):
         """Return a RelationalData object for the given table."""
